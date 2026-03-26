@@ -25,7 +25,7 @@ export default function Home() {
     // Si no hay path, devolver un placeholder estético para no romper la UI
     if (!path || path === '') return 'https://plchldr.co/i/600x400?&bg=111&fc=fff&text=DALE+Y+GANA';
     if (path.startsWith('http')) return path;
-    
+
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     return `${supabaseUrl}/storage/v1/object/public/public-assets/${path}`;
   };
@@ -57,68 +57,68 @@ export default function Home() {
       </nav>
 
       <main className="hero" style={{ padding: '2rem 0 5rem' }}>
-        
+
         <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
           <h1 className="hero-mega-title">
-             ¡SORTEO {campaign?.name?.toUpperCase() || 'MARZO'}!
+            ¡SORTEO {campaign?.name?.toUpperCase() || 'MARZO'}!
           </h1>
           <span className="hero-subtitle">CON LA SUERTE DE ALVARO</span>
         </div>
 
         {/* CONTENEDOR ÚNICO DE CAMPAÑA - SIN REPETICIONES */}
         <section style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', padding: '0 20px' }}>
-          
+
           {loading ? (
             <div style={{ height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-               <div className="animate-pulse">Cargando Sorteo...</div>
+              <div className="animate-pulse">Cargando Sorteo...</div>
             </div>
           ) : (
             <div className="unified-card" style={{ padding: '4rem 3rem' }}>
-              
+
               <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
                 <div className="pill-event-top" style={{ marginBottom: '2rem' }}>
-                  <span>PASO 1: REGISTRO OBLIGATORIO</span>
+                  <span>PARA PARTICIPAR: REGISTRATE SIN MIEDO AL EXITO</span>
                   <span style={{ color: '#eab308' }}>⭐</span>
                 </div>
-                
+
                 <div className="price-layout-v5" style={{ marginBottom: '1.5rem' }}>
-                   <span className="currency-v5">S/</span>
-                   <span className="amount-v5">40.00</span>
+                  <span className="currency-v5">S/</span>
+                  <span className="amount-v5">40.00</span>
                 </div>
-                
+
                 <p style={{ color: '#fff', fontSize: '1.4rem', opacity: 0.9, marginBottom: '2.5rem', fontWeight: 700 }}>
                   Acceso Total a todos los sorteos de la campaña
                 </p>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center', marginBottom: '4rem' }}>
-                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.2rem', borderRadius: '1rem', color: '#fff', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.9rem' }}>✅ 1 Ticket Inicial</div>
-                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.2rem', borderRadius: '1rem', color: '#fff', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.9rem' }}>✅ Sorteos Diarios</div>
-                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.2rem', borderRadius: '1rem', color: '#fff', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.9rem' }}>✅ Packs de Descuento</div>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.2rem', borderRadius: '1rem', color: '#fff', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.9rem' }}>✅ 1 Ticket Inicial</div>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.2rem', borderRadius: '1rem', color: '#fff', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.9rem' }}>✅ Sorteos Diarios</div>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.2rem', borderRadius: '1rem', color: '#fff', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.9rem' }}>✅ Packs de Descuento</div>
                 </div>
               </div>
 
               {/* GRID DE PREMIOS ESTILO IMAGEN 13 */}
               {raffles.length > 0 && (
                 <div style={{ marginBottom: '4.5rem' }}>
-                  <h3 style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 950, marginBottom: '2rem', textAlign: 'center', letterSpacing: '1px' }}>
-                    🎁 <span style={{ color: 'var(--accent-cyan)' }}>PREMIOS</span> A SORTEARSE:
+                  <h3 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: 950, marginBottom: '2rem', textAlign: 'center', letterSpacing: '1px' }}>
+                    🎁 <span style={{ color: 'var(--accent-cyan)' }}>INCREIBLES PREMIOS</span> QUE PUEDE SER TUYO:
                   </h3>
-                  
+
                   <div className="v3-prize-grid">
                     {raffles.map((r: any) => (
                       <div key={r.id} className="v3-prize-card" style={{ border: '1px solid rgba(0, 229, 255, 0.15)' }}>
-                        <img 
-                          src={getImageUrl(r.prize_image)} 
+                        <img
+                          src={getImageUrl(r.prize_image)}
                           className="v3-prize-img"
                           alt={r.prize_name}
-                          onError={(e) => { 
+                          onError={(e) => {
                             e.currentTarget.src = `https://plchldr.co/i/600x400?&bg=111&fc=fff&text=${encodeURIComponent(r.prize_name)}`;
                             e.currentTarget.style.opacity = '0.5';
                           }}
                         />
                         <div className="v3-prize-info">
-                           <div className="v3-prize-qty">{r.draw_order || 1}</div>
-                           <div className="v3-prize-name">{r.prize_name}</div>
+                          <div className="v3-prize-qty">{r.draw_order || 1}</div>
+                          <div className="v3-prize-name">{r.prize_name}</div>
                         </div>
                       </div>
                     ))}
@@ -137,8 +137,8 @@ export default function Home() {
         {mounted && products.filter((p: any) => p.product_type === 'ticket_pack').length > 0 && (
           <section id="packs" style={{ padding: '4rem 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-              <h3 style={{ fontSize: '2rem', fontWeight: 900, color: '#fff' }}>¿YA ESTÁS REGISTRADO? 🚀</h3>
-              <p style={{ color: 'var(--text-muted)' }}>Aumenta tus probabilidades con nuestros packs exclusivos.</p>
+              <h3 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#fff' }}>HERMANITO SI YA ESTÁS REGISTRADO 🚀</h3>
+              <p style={{ color: '#fff', fontSize: '1.8rem', fontWeight: 750 }}>Aumenta tus probabilidades con nuestros packs exclusivos.</p>
             </div>
 
             <div className="grid-3" style={{ maxWidth: '1000px', margin: '0 auto' }}>
@@ -147,7 +147,7 @@ export default function Home() {
                   <div className="pack-header">{p.name}</div>
                   <div className="pack-tickets">{p.tickets_count} TICKETS</div>
                   <div className="pack-price">S/ {p.price}</div>
-                  <div className="pack-btn">Comprar Extra</div>
+                  <div className="pack-btn">Aumenta tus chances</div>
                 </Link>
               ))}
             </div>
