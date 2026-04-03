@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import './globals.css';
+import { getImageUrl, formatDate } from '@/lib/utils';
+import { getActiveCampaignData, getWinnersList } from '@/lib/api/public';
 
 export default function Home() {
   const [activeCampaign, setActiveCampaign] = useState<any>(null);
@@ -14,56 +16,26 @@ export default function Home() {
   useEffect(() => {
     setMounted(true);
     const fetchData = async () => {
-      try {
-        const res = await fetch('/api/public/active-campaign');
-        const data = await res.json();
-        if (res.ok) {
-          setActiveCampaign(data.campaign);
-          setRaffles(data.raffles || []);
-          setProducts(data.products || []);
-        }
+      const campData = await getActiveCampaignData();
+      if (campData) {
+        setActiveCampaign(campData.campaign);
+        setRaffles(campData.raffles || []);
+        setProducts(campData.products || []);
+      }
 
-        const winRes = await fetch('/api/public/winners');
-        const winData = await winRes.json();
-        if (winRes.ok) setWinners(winData);
-      } catch (e) { console.error('Error fetching data:', e); }
+      const winData = await getWinnersList();
+      setWinners(winData);
+      
       setLoading(false);
     };
     fetchData();
   }, []);
 
-  const getImageUrl = (path: string) => {
-    // Si no hay path, devolver un placeholder estético para no romper la UI
-    if (!path || path === '') return 'https://plchldr.co/i/600x400?&bg=111&fc=fff&text=DALE+Y+GANA';
-    if (path.startsWith('http')) return path;
-
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    return `${supabaseUrl}/storage/v1/object/public/public-assets/${path}`;
-  };
-
-  const formatDate = (dateString: string) => {
-    if (!mounted || !dateString) return '';
-    const date = new Date(dateString);
-    const months = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
-    return `${date.getDate()} DE ${months[date.getMonth()]}`;
-  };
 
   const campaign = activeCampaign;
 
   return (
     <div className={`container ${mounted ? 'fade-in-entry' : ''}`} style={{ minHeight: '100vh' }}>
-      {/* Header Funcional */}
-      <nav className="topbar">
-        <Link href="/">
-          <img src="/logo.png" alt="Dale y Gana Logo" style={{ height: '120px', width: 'auto' }} />
-        </Link>
-        <div className="nav-links">
-          <Link href="/premios" className="nav-link">Premios</Link>
-          <Link href="https://whatsapp.com" target="_blank" className="nav-link">📣 Canal Difusión</Link>
-          <Link href="/ganadores" className="nav-link">🏆 Ganadores</Link>
-          <Link href="/consulta" className="nav-link highlight">🎫 Ver Mis Tickets</Link>
-        </div>
-      </nav>
 
       <main className="hero" style={{ padding: '2rem 0 5rem' }}>
 

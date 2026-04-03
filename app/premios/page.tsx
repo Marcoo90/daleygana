@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { getImageUrl, formatDate } from '@/lib/utils';
 
 
 export default function PremiosPage() {
@@ -19,29 +20,12 @@ export default function PremiosPage() {
       fetchActive();
    }, []);
 
-   const formatDate = (dateString: string) => {
-      if (!dateString) return '';
-      const date = new Date(dateString);
-      const months = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
-      return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
-   };
 
    const campaign = activeData?.campaign;
    const raffles = activeData?.raffles || [];
 
    return (
       <div className="container" style={{ paddingBottom: '6rem' }}>
-         <nav className="topbar">
-            <Link href="/">
-               <img src="/logo.png" alt="Dale y Gana Logo" style={{ height: '80px', width: 'auto' }} />
-            </Link>
-            <div className="nav-links">
-               <Link href="/premios" className="nav-link">Premios</Link>
-               <Link href="https://whatsapp.com" target="_blank" className="nav-link">📣 Canal Difusión</Link>
-               <Link href="/ganadores" className="nav-link">🏆 Ganadores</Link>
-               <Link href="/consulta" className="nav-link highlight">🎫 Ver Mis Tickets</Link>
-            </div>
-         </nav>
 
          {/* Hero Sección Premios Dinámico */}
          <section className="premios-hero" style={{ background: campaign?.hero_image ? `url(${campaign.hero_image}) center/cover no-repeat` : undefined }}>
@@ -68,7 +52,7 @@ export default function PremiosPage() {
                <div className="prize-card-dynamic" key={r.id}>
                   <div className="prize-card-header">
                      <div className="prize-card-qty">{r.draw_order}</div>
-                     <img src={r.prize_image || 'https://plchldr.co/i/400x250?&bg=111&fc=fff&text=Premio'} className="prize-card-img-pro" alt={r.prize_name} />
+                     <img src={getImageUrl(r.prize_image)} className="prize-card-img-pro" alt={r.prize_name} />
                   </div>
                   <div className="prize-card-body-pro">
                      <span className="prize-date-label">SORTEO: {formatDate(campaign?.draw_at)}</span>

@@ -20,16 +20,6 @@ export default function GanadoresPage() {
 
   return (
     <div className="container" style={{ paddingBottom: '4rem' }}>
-      {/* Topbar Reutilizable */}
-      <nav className="topbar">
-        <Link href="/">
-          <img src="/logo.png" alt="Dale y Gana Logo" style={{ height: '80px', width: 'auto' }} />
-        </Link>
-        <div className="nav-links">
-           <Link href="/consulta" className="nav-link highlight">🎫 Ver Mis Tickets</Link>
-           <Link href="/" className="nav-link">Volver al Sorteo</Link>
-        </div>
-      </nav>
 
       <div style={{ textAlign: 'center', margin: '5rem 0 4rem' }}>
          <h2 className="hero-mega-title" style={{ fontSize: 'clamp(2.5rem, 7vw, 4.5rem)', margin: '0' }}>

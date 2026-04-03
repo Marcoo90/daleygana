@@ -59,12 +59,6 @@ export default function ConsultaPage() {
 
   return (
     <div className="container" style={{ paddingBottom: '4rem' }}>
-      <nav className="topbar">
-        <Link href="/">
-           <img src="/logo.png" alt="Dale y Gana Logo" style={{ height: '70px', width: 'auto' }} />
-        </Link>
-        <Link href="/" className="nav-link" style={{ fontSize: '0.85rem', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', color: '#fff' }}>← Volver al Inicio</Link>
-      </nav>
 
       <div className="consulta-card">
          <div style={{ marginBottom: '2rem' }}>

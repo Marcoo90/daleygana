@@ -163,10 +163,6 @@ function RegistroContent() {
 
   return (
     <div className="container" style={{ paddingBottom: '4rem' }}>
-      <nav className="topbar">
-        <Link href="/"><img src="/logo.png" alt="Logo" style={{ height: '80px' }} /></Link>
-        <Link href="/" className="nav-link highlight">← Regresar</Link>
-      </nav>
 
       <div style={{ textAlign: 'center', margin: '3rem 0' }}>
         <h2 className="hero-mega-title" style={{ fontSize: 'clamp(2rem, 6vw, 4rem)' }}>
