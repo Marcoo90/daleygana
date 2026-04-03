@@ -22,48 +22,48 @@ export default function GanadoresPage() {
     <div className="container" style={{ paddingBottom: '4rem' }}>
 
       <div style={{ textAlign: 'center', margin: '5rem 0 4rem' }}>
-         <h2 className="hero-mega-title" style={{ fontSize: 'clamp(2.5rem, 7vw, 4.5rem)', margin: '0' }}>
-            ¡NUESTROS <span className="text-gradient">GANADORES!</span>
-         </h2>
-         <p style={{ color: '#fff', fontSize: '1.3rem', opacity: 0.9, marginTop: '1.5rem', maxWidth: '750px', margin: '1.5rem auto', fontWeight: 600 }}>
-           ¡Felicitamos a todos los afortunados ganadores de nuestro gran sorteo! La transparencia es nuestra garantía, tú puedes ser el próximo.
-         </p>
+        <h2 className="hero-mega-title" style={{ fontSize: 'clamp(2.5rem, 7vw, 4.5rem)', margin: '0' }}>
+          ¡NUESTROS GANADORES
+        </h2>
+        <p style={{ color: '#fff', fontSize: '1.3rem', opacity: 0.9, marginTop: '1.5rem', maxWidth: '750px', margin: '1.5rem auto', fontWeight: 600 }}>
+          ¡Felicitamos a todos los afortunados ganadores de nuestro gran sorteo! La transparencia es nuestra garantía, tú puedes ser el próximo.
+        </p>
       </div>
 
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
         gap: '3rem',
         maxWidth: '1200px',
-        margin: '0 auto' 
+        margin: '0 auto'
       }}>
         {winners.length > 0 ? winners.map((winner, idx) => (
-            <div key={idx} className="winner-card-premium">
-               <div className="card-image-wrapper">
-                  <img 
-                    src={winner.winner_image_url || 'https://plchldr.co/i/400x300?&bg=111&fc=fff&text=Foto+Ganador'} 
-                    alt="Ganador" 
-                    className="winner-img-full" 
-                  />
-                  <div className="ticket-overlay">{winner.visible_ticket_code}</div>
-               </div>
-               <div className="card-info-pro">
-                  <h3 className="winner-name">{winner.visible_name}</h3>
-                  <p className="winner-prize">🔥 Ganó: {winner.raffle?.prize_name || 'Premio'}</p>
-                  
-                  <div className="winner-meta">
-                    <span className="meta-tag region">
-                      📍 {winner.ticket?.participants?.department || 'Perú'}
-                    </span>
-                    <span className="meta-tag status">
-                      ¡FELICIDADES! 🎉
-                    </span>
-                  </div>
-               </div>
+          <div key={idx} className="winner-card-premium">
+            <div className="card-image-wrapper">
+              <img
+                src={winner.winner_image_url || 'https://plchldr.co/i/400x300?&bg=111&fc=fff&text=Foto+Ganador'}
+                alt="Ganador"
+                className="winner-img-full"
+              />
+              <div className="ticket-overlay">{winner.visible_ticket_code}</div>
             </div>
-         )) : (
-            !loading && <p style={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center', gridColumn: '1 / -1', fontSize: '1.5rem', fontWeight: 700, padding: '4rem' }}>Aún no hay ganadores proclamados. ¡Tú podrías ser el siguiente!</p>
-         )}
+            <div className="card-info-pro">
+              <h3 className="winner-name">{winner.visible_name}</h3>
+              <p className="winner-prize">🔥 Ganó: {winner.raffle?.prize_name || 'Premio'}</p>
+
+              <div className="winner-meta">
+                <span className="meta-tag region">
+                  📍 {winner.ticket?.participants?.department || 'Perú'}
+                </span>
+                <span className="meta-tag status">
+                  ¡FELICIDADES! 🎉
+                </span>
+              </div>
+            </div>
+          </div>
+        )) : (
+          !loading && <p style={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center', gridColumn: '1 / -1', fontSize: '1.5rem', fontWeight: 700, padding: '4rem' }}>Aún no hay ganadores proclamados. ¡Tú podrías ser el siguiente!</p>
+        )}
       </div>
 
       <style jsx>{`
