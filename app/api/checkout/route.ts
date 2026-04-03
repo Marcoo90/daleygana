@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { supabaseAdmin as supabase } from '@/lib/supabase/client';
 
 export async function POST(request: Request) {
   try {
@@ -15,6 +15,7 @@ export async function POST(request: Request) {
     const packId = formData.get('packId') as string;
     const type = formData.get('type') as string; // 'base' o 'pack'
     const receiptFile = formData.get('receipt') as File;
+    const dniVerified = formData.get('dni_verified') as string;
 
     if (!dni || !campaignId || !receiptFile) {
         return NextResponse.json({ error: 'Faltan datos críticos (DNI, Campaña o Voucher)' }, { status: 400 });
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
         first_name: firstName || '', 
         last_name: lastName || '', 
         whatsapp: whatsapp || '', 
-        department: department || '' 
+        department: department || ''
       }, { onConflict: 'dni' })
       .select()
       .single();
@@ -37,43 +38,73 @@ export async function POST(request: Request) {
 
     // 3. Regla de Negocio: Si es un PACK, verificar registro previo
     if (type === 'pack' || (packId && packId !== 'null')) {
-        const { data: reg, error: rError } = await supabase
+        // A. Primero revisamos si ya tiene un registro formal en la campaña
+        const { data: reg } = await supabase
             .from('campaign_registrations')
             .select('*')
             .eq('participant_id', participant.id)
             .eq('campaign_id', campaignId)
-            .single();
+            .maybeSingle();
 
-        if (rError || !reg) {
-            return NextResponse.json({ 
-                error: 'Debes tener un Registro Base validado antes de comprar packs adicionales.' 
-            }, { status: 403 });
+        // B. Si no existe el registro formal, buscamos un fallback en sus órdenes validadas
+        if (!reg) {
+            const { data: validOrder } = await supabase
+                .from('orders')
+                .select('id')
+                .eq('participant_id', participant.id)
+                .eq('campaign_id', campaignId)
+                .in('order_status', ['validated', 'completed'])
+                .limit(1);
+            
+            if (!validOrder || validOrder.length === 0) {
+                return NextResponse.json({ 
+                    error: 'Debes tener un Registro Base validado antes de comprar packs adicionales.' 
+                }, { status: 403 });
+            }
         }
     }
 
     // 4. Determinar Producto y Monto
     let productId = null;
     let finalAmount = 0;
+    let productName = '';
 
     if (type === 'base') {
         const { data: baseProd } = await supabase
             .from('products')
-            .select('id, price')
+            .select('id, price, name')
             .eq('campaign_id', campaignId)
             .eq('product_type', 'base_registration')
             .single();
         
         productId = baseProd?.id || null;
         finalAmount = baseProd?.price || 40.00;
+        productName = baseProd?.name || 'Registro Base';
     } else {
         const { data: packProd } = await supabase
             .from('products')
-            .select('id, price')
+            .select('id, price, name')
             .eq('id', packId)
             .single();
         
         productId = packProd?.id;
         finalAmount = packProd?.price || 0;
+        productName = packProd?.name || 'Ticket Pack';
+    }
+
+    // --- FIX CONSTRAINT ERROR ---
+    // The orders table requires pack_id (legacy foreign key). 
+    // We synchronize the products row into packs to satisfy it safely.
+    if (productId) {
+        await supabase.from('packs').upsert({
+            id: productId,
+            campaign_id: campaignId,
+            name: productName,
+            slug: productId, // unique fallback slug
+            price: finalAmount,
+            ticket_quantity: 1,
+            is_active: true
+        });
     }
 
     // 5. Upload Comprobante (Privado: bucket receipts)
@@ -94,6 +125,7 @@ export async function POST(request: Request) {
         participant_id: participant.id,
         campaign_id: campaignId,
         product_id: productId,
+        pack_id: productId,
         order_code: orderCode,
         total_amount: finalAmount,
         order_status: 'pending'

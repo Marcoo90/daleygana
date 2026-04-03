@@ -1,53 +1,164 @@
 "use client";
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function GanadoresPage() {
-  const winners = [
-    { name: "MARCO ANTONIO R.", prize: "Honda CBR 2024", ticket: "DLG-1A4K", area: "Lima", pic: "https://plchldr.co/i/400x300?&bg=ff007f&fc=fff&text=Foto+Ganador" },
-    { name: "JUANA BEATRIZ M.", prize: "S/ 1,200 en Efectivo", ticket: "DLG-8X9B", area: "Arequipa", pic: "https://plchldr.co/i/400x300?&bg=00f0ff&fc=000&text=Foto+Ganador" },
-    { name: "CARLOS ANDRÉS G.", prize: "iPhone 15 Pro Max", ticket: "DLG-F2Q9", area: "Piura", pic: "https://plchldr.co/i/400x300?&bg=ffea00&fc=000&text=Foto+Ganador" }
-  ];
+  const [winners, setWinners] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchWinners = async () => {
+      try {
+        const res = await fetch('/api/public/winners');
+        const data = await res.json();
+        if (res.ok) setWinners(data);
+      } catch (e) { console.error(e); }
+      setLoading(false);
+    };
+    fetchWinners();
+  }, []);
 
   return (
     <div className="container" style={{ paddingBottom: '4rem' }}>
-      {/* Topbar Reutilizable Mini */}
+      {/* Topbar Reutilizable */}
       <nav className="topbar">
         <Link href="/">
-           <h1 className="brand-logo" style={{ cursor: 'pointer' }}>DALE<span>Y</span>GANA</h1>
+          <img src="/logo.png" alt="Dale y Gana Logo" style={{ height: '80px', width: 'auto' }} />
         </Link>
         <div className="nav-links">
-           <Link href="/consulta" className="nav-link">🎫 Ver Mis Tickets</Link>
-           <Link href="/" className="nav-link highlight">Volver al Sorteo</Link>
+           <Link href="/consulta" className="nav-link highlight">🎫 Ver Mis Tickets</Link>
+           <Link href="/" className="nav-link">Volver al Sorteo</Link>
         </div>
       </nav>
 
-      <div style={{ textAlign: 'center', margin: '4rem 0' }}>
-         <h2 className="hero-title" style={{ fontSize: '3rem' }}>¡NUESTROS <span className="text-gradient">GANADORES!</span></h2>
-         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginTop: '1rem', maxWidth: '600px', margin: '1rem auto' }}>
+      <div style={{ textAlign: 'center', margin: '5rem 0 4rem' }}>
+         <h2 className="hero-mega-title" style={{ fontSize: 'clamp(2.5rem, 7vw, 4.5rem)', margin: '0' }}>
+            ¡NUESTROS <span className="text-gradient">GANADORES!</span>
+         </h2>
+         <p style={{ color: '#fff', fontSize: '1.3rem', opacity: 0.9, marginTop: '1.5rem', maxWidth: '750px', margin: '1.5rem auto', fontWeight: 600 }}>
            ¡Felicitamos a todos los afortunados ganadores de nuestro gran sorteo! La transparencia es nuestra garantía, tú puedes ser el próximo.
          </p>
       </div>
 
-      <div className="grid-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-         {winners.map((winner, idx) => (
-            <div key={idx} className="card" style={{ padding: '0', overflow: 'hidden' }}>
-               <img src={winner.pic} alt="Ganador" style={{ width: '100%', height: '250px', objectFit: 'cover' }} />
-               <div style={{ padding: '2rem', textAlign: 'center' }}>
-                  <h3 style={{ fontSize: '1.8rem', color: 'var(--accent-yellow)', marginBottom: '0.5rem' }}>{winner.name}</h3>
-                  <p style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '1rem' }}>Ganó: {winner.prize}</p>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
+        gap: '3rem',
+        maxWidth: '1200px',
+        margin: '0 auto' 
+      }}>
+        {winners.length > 0 ? winners.map((winner, idx) => (
+            <div key={idx} className="winner-card-premium">
+               <div className="card-image-wrapper">
+                  <img 
+                    src={winner.winner_image_url || 'https://plchldr.co/i/400x300?&bg=111&fc=fff&text=Foto+Ganador'} 
+                    alt="Ganador" 
+                    className="winner-img-full" 
+                  />
+                  <div className="ticket-overlay">{winner.visible_ticket_code}</div>
+               </div>
+               <div className="card-info-pro">
+                  <h3 className="winner-name">{winner.visible_name}</h3>
+                  <p className="winner-prize">🔥 Ganó: {winner.raffle?.prize_name || 'Premio'}</p>
                   
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-                    <span style={{ background: 'rgba(255,255,255,0.1)', padding: '0.4rem 1rem', borderRadius: '2rem', color: 'var(--text-muted)' }}>
-                      📍 {winner.area}
+                  <div className="winner-meta">
+                    <span className="meta-tag region">
+                      📍 {winner.ticket?.participants?.department || 'Perú'}
                     </span>
-                    <span style={{ background: 'rgba(0, 240, 255, 0.1)', border: '1px solid rgba(0,240,255,0.3)', padding: '0.4rem 1rem', borderRadius: '2rem', color: 'var(--accent-cyan)' }}>
-                      🎫 {winner.ticket}
+                    <span className="meta-tag status">
+                      ¡FELICIDADES! 🎉
                     </span>
                   </div>
                </div>
             </div>
-         ))}
+         )) : (
+            !loading && <p style={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center', gridColumn: '1 / -1', fontSize: '1.5rem', fontWeight: 700, padding: '4rem' }}>Aún no hay ganadores proclamados. ¡Tú podrías ser el siguiente!</p>
+         )}
       </div>
+
+      <style jsx>{`
+        .winner-card-premium {
+          background: rgba(15, 5, 25, 0.6);
+          border-radius: 2rem;
+          overflow: hidden;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(20px);
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+          position: relative;
+        }
+        .winner-card-premium:hover {
+          transform: translateY(-12px);
+          border-color: var(--accent-cyan);
+          box-shadow: 0 30px 60px rgba(0, 229, 255, 0.2);
+        }
+        .card-image-wrapper {
+          position: relative;
+          height: 250px;
+          overflow: hidden;
+        }
+        .winner-img-full {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.5s;
+        }
+        .winner-card-premium:hover .winner-img-full {
+          transform: scale(1.1);
+        }
+        .ticket-overlay {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+          background: var(--accent-cyan);
+          color: #000;
+          font-weight: 950;
+          padding: 0.5rem 1rem;
+          border-radius: 2rem;
+          font-family: 'Outfit', sans-serif;
+          font-size: 0.9rem;
+          box-shadow: 0 5px 15px rgba(0, 229, 255, 0.4);
+        }
+        .card-info-pro {
+          padding: 2rem;
+          text-align: center;
+        }
+        .winner-name {
+          font-size: 1.8rem;
+          color: #fff;
+          margin-bottom: 0.5rem;
+          font-weight: 900;
+          text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+        .winner-prize {
+          color: var(--accent-yellow);
+          font-size: 1.2rem;
+          font-weight: 700;
+          margin-bottom: 1.5rem;
+          font-family: 'Inter', sans-serif;
+        }
+        .winner-meta {
+          display: flex;
+          justify-content: center;
+          gap: 1rem;
+        }
+        .meta-tag {
+          font-size: 0.85rem;
+          padding: 0.6rem 1rem;
+          border-radius: 2rem;
+          font-weight: 800;
+        }
+        .meta-tag.region {
+          background: rgba(255, 255, 255, 0.05);
+          color: #cbd5e1;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .meta-tag.status {
+          background: rgba(0, 229, 255, 0.1);
+          color: var(--accent-cyan);
+          border: 1px solid rgba(0, 229, 255, 0.3);
+        }
+      `}</style>
     </div>
   );
 }

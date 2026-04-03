@@ -4,7 +4,7 @@ import { supabaseAdmin as supabase } from '@/lib/supabase/client';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { raffleId, ticketId, visible_name, visible_ticket_code, testimonial, winner_image } = body;
+    const { raffleId, ticketId, visible_name, visible_ticket_code, testimonial, winner_image_url } = body;
 
     if (!raffleId || !ticketId) {
         return NextResponse.json({ error: 'Raffle and Ticket ID are required' }, { status: 400 });
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
             visible_name: visible_name,
             visible_ticket_code: visible_ticket_code,
             testimonial: testimonial,
-            winner_image: winner_image,
+            winner_image_url: winner_image_url,
             published_at: new Date().toISOString()
         })
         .select()

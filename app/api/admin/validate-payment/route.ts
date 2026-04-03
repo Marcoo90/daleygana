@@ -8,8 +8,6 @@ import { supabaseAdmin as supabase } from '@/lib/supabase/client';
  *   2. Marks order as 'completed'
  *   3. Creates campaign_registration if base_registration type
  *   4. Generates N tickets (based on products.tickets_count, defaults to 1)
- *
- * Handles the case where product_id is NULL (legacy or direct orders).
  */
 export async function POST(request: Request) {
   try {
@@ -24,31 +22,43 @@ export async function POST(request: Request) {
       .single();
 
     if (orderError || !order) {
-       return NextResponse.json({ error: 'Orden no encontrada: ' + orderError?.message }, { status: 404 });
+       return NextResponse.json({ error: 'Orden no encontrada' }, { status: 404 });
     }
 
-    // 2. Mark payment(s) as validated
+    // 2. EVITAR DUPLICADOS: Si la orden ya está validada, no hacer nada más
+    if (order.order_status === 'validated' || order.order_status === 'completed') {
+       return NextResponse.json({ 
+         success: true, 
+         message: 'Esta orden ya fue validada previamente.',
+         ticketsAlreadyGenerated: true 
+       });
+    }
+
+    // 3. Mark payment(s) as validated
     const { error: paymentUpdateError } = await supabase
       .from('payments')
       .update({ status: 'validated', validated_at: new Date().toISOString() })
       .eq('order_id', orderId);
 
     if (paymentUpdateError) {
-      console.warn('Payment update warning:', paymentUpdateError.message);
-      // Non-fatal: continue even if no payment row exists
+      return NextResponse.json({ error: 'Error al actualizar pago: ' + paymentUpdateError.message }, { status: 500 });
     }
 
-    // 3. Mark order as completed
-    await supabase
+    // 4. Mark order as validated
+    const { error: orderUpdateError } = await supabase
       .from('orders')
-      .update({ order_status: 'completed' })
+      .update({ order_status: 'validated' })
       .eq('id', orderId);
+    
+    if (orderUpdateError) {
+        return NextResponse.json({ error: 'Error al actualizar orden: ' + orderUpdateError.message }, { status: 500 });
+    }
 
-    // 4. If base_registration product (or no product = assume base), create campaign_registration
+    // 5. If base_registration, create/ensure campaign_registration
     const productType = order.products?.product_type;
-    const isBaseOrUnknown = !productType || productType === 'base_registration';
+    const isBase = !productType || productType === 'base_registration';
 
-    if (isBaseOrUnknown) {
+    if (isBase) {
         const { error: regError } = await supabase
           .from('campaign_registrations')
           .upsert({
@@ -58,14 +68,14 @@ export async function POST(request: Request) {
           }, { onConflict: 'campaign_id, participant_id' });
 
         if (regError) {
-          console.warn('Campaign registration warning:', regError.message);
+          console.error('Campaign registration critical error:', regError.message);
+          // Opcional: podrías decidir si esto es fatal o no. Lo pondremos como advertencia por ahora pero idealmente debería funcionar.
         }
     }
 
-    // 5. Generate TICKETS
+    // 6. Generate TICKETS
     const ticketsToGenerate = order.products?.tickets_count || 1;
     
-    // Get campaign slug for ticket code prefix
     const campSlug = order.campaigns?.slug?.toUpperCase().slice(0, 3) 
       || order.campaigns?.name?.slice(0, 3).toUpperCase()
       || 'DYG';
@@ -84,10 +94,7 @@ export async function POST(request: Request) {
 
     const { error: ticketError } = await supabase.from('tickets').insert(tickets);
     if (ticketError) {
-        console.error('Ticket Gen Error:', ticketError);
-        return NextResponse.json({ 
-          error: 'Tickets no generados: ' + ticketError.message 
-        }, { status: 500 });
+        return NextResponse.json({ error: 'Pago validado pero error al generar tickets: ' + ticketError.message }, { status: 500 });
     }
 
     return NextResponse.json({ 

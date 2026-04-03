@@ -167,6 +167,11 @@ function RafflesAdminContent() {
                 <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '0.5rem' }}>
                    <Link
                      href={`/admin/winners?raffleId=${r.id}`}
+                     onClick={() => {
+                        if (typeof window !== 'undefined') {
+                           localStorage.setItem('lastRaffleId', r.id);
+                        }
+                     }}
                      style={{ flex: 2, background: '#1e1b4b', color: '#fff', textAlign: 'center', padding: '0.65rem', borderRadius: '0.75rem', textDecoration: 'none', fontWeight: 700, fontSize: '0.88rem', transition: 'background 0.15s' }}
                    >
                      🏆 Elegir Ganador

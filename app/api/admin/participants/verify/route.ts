@@ -14,7 +14,7 @@ export async function GET(request: Request) {
         // 1. Buscar participante por DNI
         const { data: participant, error: pError } = await supabase
             .from('participants')
-            .select('id, first_name, last_name')
+            .select('id, first_name, last_name, whatsapp, department')
             .eq('dni', dni)
             .single();
 
@@ -28,18 +28,28 @@ export async function GET(request: Request) {
             .select('*')
             .eq('participant_id', participant.id)
             .eq('campaign_id', campaignId)
-            .single();
+            .maybeSingle();
 
-        if (rError || !reg) {
-            return NextResponse.json({ 
-                registered: false, 
-                message: 'No tienes un registro base activo en esta campaña.' 
-            });
+        if (reg) {
+            return NextResponse.json({ registered: true, participant });
+        }
+
+        // 3. Fallback: Verificar si tiene alguna orden base validada aunque no esté en campaign_registrations
+        const { data: order, error: oError } = await supabase
+            .from('orders')
+            .select('id')
+            .eq('participant_id', participant.id)
+            .eq('campaign_id', campaignId)
+            .in('order_status', ['validated', 'completed'])
+            .limit(1);
+        
+        if (order && order.length > 0) {
+            return NextResponse.json({ registered: true, participant });
         }
 
         return NextResponse.json({ 
-            registered: true, 
-            participant: participant 
+            registered: false, 
+            message: 'No se encontró un Registro Base validado para este DNI en la campaña actual.' 
         });
 
     } catch (e: any) {

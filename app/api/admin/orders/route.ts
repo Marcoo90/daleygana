@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin as supabase } from '@/lib/supabase/client';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/admin/orders
  * Returns ALL orders with full relational data.
@@ -23,7 +25,28 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data || []);
+  const orders = data || [];
+
+  for (const order of orders) {
+    if (order.payments) {
+      // Normalize to array since Supabase returns an object for 1:1 relations and array for 1:N
+      const paymentsArr = Array.isArray(order.payments) ? order.payments : [order.payments];
+      
+      for (const payment of paymentsArr) {
+        if (payment.receipt_path) {
+          const { data: signData } = await supabase.storage
+            .from('receipts')
+            .createSignedUrl(payment.receipt_path, 3600);
+          
+          if (signData?.signedUrl) {
+            payment.receipt_url = signData.signedUrl;
+          }
+        }
+      }
+    }
+  }
+
+  return NextResponse.json(orders);
 }
 
 /**

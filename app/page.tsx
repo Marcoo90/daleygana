@@ -4,21 +4,32 @@ import Link from 'next/link';
 import './globals.css';
 
 export default function Home() {
-  const [activeData, setActiveData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [activeCampaign, setActiveCampaign] = useState<any>(null);
+  const [raffles, setRaffles] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [winners, setWinners] = useState<any[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setMounted(true);
-    const fetchActive = async () => {
+    const fetchData = async () => {
       try {
         const res = await fetch('/api/public/active-campaign');
         const data = await res.json();
-        if (res.ok) setActiveData(data);
-      } catch (err) { console.error(err); }
+        if (res.ok) {
+          setActiveCampaign(data.campaign);
+          setRaffles(data.raffles || []);
+          setProducts(data.products || []);
+        }
+
+        const winRes = await fetch('/api/public/winners');
+        const winData = await winRes.json();
+        if (winRes.ok) setWinners(winData);
+      } catch (e) { console.error('Error fetching data:', e); }
       setLoading(false);
     };
-    fetchActive();
+    fetchData();
   }, []);
 
   const getImageUrl = (path: string) => {
@@ -37,9 +48,7 @@ export default function Home() {
     return `${date.getDate()} DE ${months[date.getMonth()]}`;
   };
 
-  const campaign = activeData?.campaign;
-  const raffles = activeData?.raffles || [];
-  const products = activeData?.products || [];
+  const campaign = activeCampaign;
 
   return (
     <div className={`container ${mounted ? 'fade-in-entry' : ''}`} style={{ minHeight: '100vh' }}>
@@ -89,12 +98,12 @@ export default function Home() {
                 <p style={{ color: '#fff', fontSize: '1.4rem', opacity: 0.9, marginBottom: '2.5rem', fontWeight: 700 }}>
                   Acceso Total a todos los sorteos de la campaña
                 </p>
-
+                {/*
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center', marginBottom: '4rem' }}>
                   <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.2rem', borderRadius: '1rem', color: '#fff', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.9rem' }}>✅ 1 Ticket Inicial</div>
                   <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.2rem', borderRadius: '1rem', color: '#fff', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.9rem' }}>✅ Sorteos Diarios</div>
                   <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.2rem', borderRadius: '1rem', color: '#fff', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.9rem' }}>✅ Packs de Descuento</div>
-                </div>
+                </div>*/}
               </div>
 
               {/* GRID DE PREMIOS ESTILO IMAGEN 13 */}
@@ -154,41 +163,102 @@ export default function Home() {
           </section>
         )}
 
-        {/* Alerta de Seguridad */}
         <div className="alert-fraud">
           <div className="alert-fraud-title">⚠️ ¡ALERTA DE SEGURIDAD! ⚠️</div>
           <p className="alert-fraud-text">Verifica siempre que el pago sea a nombre de:</p>
           <div className="alert-fraud-company">CONSORCIO DALE Y GANA S.A.C</div>
           <p className="alert-fraud-footer">Si sale otro nombre, ¡ESTÁS SIENDO ESTAFADO!</p>
         </div>
-      </main>
 
-      <div className="home-winners-belt">
-        <div className="home-winners-belt-inner">
-          <div className="home-winners-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ fontSize: '4rem', filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.3))' }}>🏆</div>
-              <div>
-                <h3>¡TÚ PODRÍAS SER</h3>
-                <span>el próximo suertud@!</span>
+        {/* SECCIÓN GANADORES - EFECTO VOID FLOTANTE */}
+        <section style={{ padding: '6rem 0', position: 'relative', overflow: 'hidden' }}>
+          {/* Luces de acento de fondo (Blobs) */}
+          <div style={{ position: 'absolute', top: '50%', left: '20%', width: '300px', height: '300px', background: 'var(--accent-purple)', filter: 'blur(150px)', opacity: 0.1, borderRadius: '50%', zIndex: 0 }}></div>
+          <div style={{ position: 'absolute', top: '20%', right: '10%', width: '400px', height: '400px', background: 'var(--accent-cyan)', filter: 'blur(180px)', opacity: 0.1, borderRadius: '50%', zIndex: 0 }}></div>
+
+          <div className="container" style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+            <h2 className="hero-title" style={{ fontSize: '2.8rem', marginBottom: '4rem' }}>
+              GALERÍA DE NUESTROS GANADORES 📸
+            </h2>
+
+            <div className="ticker-container-v3">
+              <div className="winners-carousel-v2">
+                {winners.length > 0 ? (
+                  [...winners, ...winners].map((w, idx) => (
+                    <div key={idx} className="winner-photo-wrapper">
+                      <img
+                        src={w.winner_image_url || 'https://plchldr.co/i/400x300?&bg=111&fc=fff&text=Ganador'}
+                        alt="Ganador"
+                        className="winner-photo-img"
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>Próximamente más ganadores...</p>
+                )}
               </div>
             </div>
-            <Link href="/registro" className="btn-green-light">¡Participar ya!</Link>
           </div>
+        </section>
 
-          <div className="winners-carousel">
-            {[1, 2, 3, 4, 5, 6].map((idx) => (
-              <img
-                key={idx}
-                src={`/ganadores/${idx}.jpg`}
-                onError={(e) => { e.currentTarget.src = `https://plchldr.co/i/250x350?&bg=111&fc=fff&text=Ganador+${idx}` }}
-                alt={`Súper Ganador ${idx}`}
-                className="winner-photo"
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+        <style jsx>{`
+          .ticker-container-v3 {
+            overflow: hidden;
+            padding: 2rem 0;
+            width: 100%;
+            -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+            mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+          }
+          .winners-carousel-v2 {
+            display: flex;
+            gap: 2rem;
+            width: fit-content;
+            animation: ticker 50s linear infinite;
+          }
+          .winners-carousel-v2:hover {
+            animation-play-state: paused;
+          }
+          @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .winner-photo-wrapper {
+            flex: 0 0 350px;
+            height: 240px;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.02);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          }
+          .winner-photo-wrapper:hover {
+            transform: scale(1.1) rotate(2deg);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 25px 60px rgba(0, 229, 255, 0.2);
+            z-index: 10;
+          }
+          .winner-photo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.85;
+            transition: opacity 0.3s;
+          }
+          .winner-photo-wrapper:hover .winner-photo-img {
+            opacity: 1;
+          }
+          @media (max-width: 768px) {
+            .ticker-container-v3 { -webkit-mask-image: none; mask-image: none; }
+            .winner-photo-wrapper {
+              flex: 0 0 260px;
+              height: 180px;
+            }
+          }
+        `}</style>
+
+      </main>
     </div>
   );
 }

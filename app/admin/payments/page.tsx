@@ -34,7 +34,7 @@ export default function PaymentsPage() {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/orders');
+      const res = await fetch('/api/admin/orders', { cache: 'no-store' });
       const data = await res.json();
       if (res.ok && Array.isArray(data)) {
         setRawTotal(data.length);
@@ -98,7 +98,8 @@ export default function PaymentsPage() {
   // - it has any payment with status 'pending'
   const pendingOrders = orders.filter(o => {
     if (o.order_status === 'pending') return true;
-    if (Array.isArray(o.payments) && o.payments.some((p: any) => p.status === 'pending')) return true;
+    const pmts = Array.isArray(o.payments) ? o.payments : (o.payments ? [o.payments] : []);
+    if (pmts.some((p: any) => p.status === 'pending')) return true;
     return false;
   });
 
@@ -175,8 +176,8 @@ export default function PaymentsPage() {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(480px, 1fr))', gap: '1.5rem' }}>
           {displayOrders.map(o => {
-            const paymentRow = Array.isArray(o.payments) ? o.payments[0] : null;
-            const receiptUrl = getReceiptUrl(paymentRow?.receipt_path || null);
+            const paymentRow = Array.isArray(o.payments) ? o.payments[0] : o.payments;
+            const receiptUrl = paymentRow?.receipt_url || getReceiptUrl(paymentRow?.receipt_path || null);
             const isValidating = validating === o.id;
             const isPending = o.order_status === 'pending';
 
@@ -292,7 +293,7 @@ export default function PaymentsPage() {
                 )}
 
                 {/* Completed info */}
-                {o.order_status === 'completed' && (
+                {(o.order_status === 'validated' || o.order_status === 'completed') && (
                   <div style={{ padding: '0.85rem 1.5rem', borderTop: '1px solid #f1f5f9', background: '#f0fdf4', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: '1rem' }}>✅</span>
                     <p style={{ color: '#16a34a', fontSize: '0.85rem', fontWeight: 700 }}>Pago validado — tickets generados</p>

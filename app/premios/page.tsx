@@ -46,14 +46,14 @@ export default function PremiosPage() {
          {/* Hero Sección Premios Dinámico */}
          <section className="premios-hero" style={{ background: campaign?.hero_image ? `url(${campaign.hero_image}) center/cover no-repeat` : undefined }}>
             <div className="premios-hero-content">
-               <span className="benefit-badge">Beneficios Exclusivos</span>
+               <span className="benefit-badge">LA MEJOR FORMA DE GANAR ES ARRIESGARSE</span>
                <h2 className="hero-mega-title" style={{ textAlign: 'left', fontSize: 'clamp(2.5rem, 6vw, 5rem)', textShadow: '2px 4px 10px #000' }}>
                   {campaign?.name || 'PRÓXIMO EVENTO'}
                </h2>
                <p style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 900, marginBottom: '2rem', textShadow: '0 2px 5px #000' }}>
-                  TODAS LAS SEMANAS <span style={{ color: 'var(--accent-cyan)' }}>sorteamos premios increíbles</span>
+                  TODOS LOS MESES <span style={{ color: 'var(--accent-cyan)' }}>sorteamos premios increíbles</span>
                </p>
-               <Link href="#tienda" className="btn-green-light" style={{ display: 'inline-block' }}>Aumentar mis chances 🎟️</Link>
+               {/* <Link href="#tienda" className="btn-green-light" style={{ display: 'inline-block' }}>Aumentar mis chances 🎟️</Link>*/}
             </div>
             <div className="overlay-dark" style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1 }}></div>
          </section>
@@ -82,7 +82,7 @@ export default function PremiosPage() {
          {/* Sección Multiplicador - PACKS DINÁMICOS desde BD */}
          <section id="tienda" className="upsell-section" style={{ background: 'rgba(0,0,0,0.3)', padding: '5rem 3rem' }}>
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-               <h2 className="hero-title" style={{ fontSize: '3rem', textShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>MULTIPLICA TUS <span className="text-gradient">PROBABILIDADES</span></h2>
+               <h2 className="hero-title" style={{ fontSize: '3rem', textShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>MULTIPLICA TUS PROBABILIDADES</h2>
                <p style={{ color: '#fff', fontWeight: 600, maxWidth: '750px', margin: '1rem auto' }}>
                   ¿Ya estás registrado? Compra packs adicionales y no dejes que el premio de tus sueños se escape.
                </p>

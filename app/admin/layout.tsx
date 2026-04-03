@@ -9,18 +9,85 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
 
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    // 1. Verificación inicial de sesión
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
+      setLoading(false);
+      
+      if (!session && pathname !== '/admin/login') {
+        router.push('/admin/login');
+      }
+    };
+
+    checkSession();
+
+    // 2. Escuchar cambios en la sesión
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (!session && pathname !== '/admin/login') {
+        router.push('/admin/login');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [pathname, router]);
+
+  // LOGIN POR INACTIVIDAD (30 MINUTOS)
+  useEffect(() => {
+    if (!session || pathname === '/admin/login') return;
+
+    let timeout: any;
+    
+    const resetTimer = () => {
+       if (timeout) clearTimeout(timeout);
+       timeout = setTimeout(() => {
+          console.log("Inactividad detectada, cerrando sesión por seguridad.");
+          handleLogout();
+       }, 30 * 60 * 1000); // 30 minutos de inactividad
+    };
+
+    // Escuchar eventos de interacción común
+    window.addEventListener('mousemove', resetTimer);
+    window.addEventListener('keydown', resetTimer);
+    window.addEventListener('mousedown', resetTimer);
+    window.addEventListener('touchstart', resetTimer);
+    window.addEventListener('scroll', resetTimer);
+
+    resetTimer(); // Iniciar cronómetro al montar o cambiar sesión
+
+    return () => {
+       window.removeEventListener('mousemove', resetTimer);
+       window.removeEventListener('keydown', resetTimer);
+       window.removeEventListener('mousedown', resetTimer);
+       window.removeEventListener('touchstart', resetTimer);
+       window.removeEventListener('scroll', resetTimer);
+       if (timeout) clearTimeout(timeout);
+    };
+  }, [session, pathname]);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (!error) {
-       window.location.assign('/admin/login');
+       router.push('/admin/login');
     }
   };
 
-  if (!mounted) return null;
+  if (!mounted || (loading && pathname !== '/admin/login')) return null;
+
+  // Si estamos en el login, no mostramos el sidebar ni el layout de administración
+  if (pathname === '/admin/login') {
+    return <div className="admin-login-wrapper">{children}</div>;
+  }
+
+  // Si no hay sesión y no estamos en login, no mostramos nada hasta que el useEffect redireccione
+  if (!session) return null;
 
   return (
     <div className="admin-body-v2">
@@ -36,6 +103,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin/campaigns" className={`admin-link-v2 ${pathname.includes('/campaigns') ? 'active' : ''}`}>📅 Campañas</Link>
           <Link href="/admin/raffles" className={`admin-link-v2 ${pathname.includes('/raffles') ? 'active' : ''}`}>🎁 Sorteos</Link>
           <Link href="/admin/products" className={`admin-link-v2 ${pathname.includes('/products') ? 'active' : ''}`}>📂 Catálogo</Link>
+          <Link href="/admin/reports" className={`admin-link-v2 ${pathname.includes('/reports') ? 'active' : ''}`}>📃 Reportes</Link>
           
           <div className="sidebar-divider"></div>
           

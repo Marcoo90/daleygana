@@ -1,13 +1,35 @@
 "use client";
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 function WinnersAdminContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const raffleId = searchParams.get('raffleId');
-  
+  const raffleIdFromUrl = searchParams.get('raffleId');
+  const [existingWinners, setExistingWinners] = useState<any[]>([]);
+  const [loadingWinners, setLoadingWinners] = useState(false);
+
+  // Backup: Intentar recuperar el Raffle ID de la URL o del localStorage
+  const finalRaffleId = raffleIdFromUrl || (typeof window !== 'undefined' ? localStorage.getItem('lastRaffleId') : null);
+
+  const fetchExistingWinners = async () => {
+    setLoadingWinners(true);
+    try {
+        const res = await fetch('/api/public/winners');
+        const data = await res.json();
+        if (res.ok) setExistingWinners(data);
+    } catch (e) { console.error(e); }
+    setLoadingWinners(false);
+  };
+
+  useEffect(() => {
+    if (!finalRaffleId) {
+        fetchExistingWinners();
+    }
+  }, [finalRaffleId]);
+
+  // Usamos el ID directamente de la URL para evitar desfases de estado
   const [ticketSearch, setTicketSearch] = useState('');
   const [foundTicket, setFoundTicket] = useState<any>(null);
   const [testimonial, setTestimonial] = useState('');
@@ -47,19 +69,30 @@ function WinnersAdminContent() {
   };
 
   const publishWinner = async () => {
-    if (!foundTicket || !raffleId) return;
+    if (!foundTicket) {
+      alert("⚠️ Primero debes buscar y encontrar un ticket ganador.");
+      return;
+    }
+    
+    // Backup: Intentar recuperar el Raffle ID de la URL o del localStorage
+    const finalRaffleId = raffleIdFromUrl || (typeof window !== 'undefined' ? localStorage.getItem('lastRaffleId') : null);
+
+    if (!finalRaffleId) {
+      alert("❌ Se perdió el contexto del sorteo. Por favor regresa a la lista de premios y vuelve a dar click en 'Elegir Ganador'.");
+      return;
+    }
     setLoading(true);
     try {
         const res = await fetch('/api/admin/winners', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-             raffleId: raffleId,
+             raffleId: finalRaffleId,
              ticketId: foundTicket.id,
              visible_name: `${foundTicket.participants.first_name} ${foundTicket.participants.last_name}`,
              visible_ticket_code: foundTicket.ticket_code,
              testimonial: testimonial,
-             winner_image: imageUrl
+             winner_image_url: imageUrl
           })
         });
         if (res.ok) {
@@ -77,83 +110,139 @@ function WinnersAdminContent() {
     <div className="admin-content animate-fade-in">
       <header style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
          <div>
-            <h1 className="text-gradient-cyan" style={{ fontSize: '2.5rem', fontWeight: 950 }}>🏆 Proclamación de Ganador</h1>
-            <p style={{ color: '#64748b' }}>Busca el ticket ganador y publica el resultado oficial.</p>
+            <h1 className="text-gradient-cyan" style={{ fontSize: '2.5rem', fontWeight: 950 }}>
+              {finalRaffleId ? '🏆 Proclamación de Ganador' : '🎉 Ganadores Oficiales'}
+            </h1>
+            <p style={{ color: '#64748b' }}>
+              {finalRaffleId ? 'Busca el ticket ganador y publica el resultado.' : 'Historial de ganadores de cada sorteo.'}
+            </p>
          </div>
-         <Link href="/admin/campaigns" className="btn-cancel-pro">Cancelar</Link>
+         <div style={{ display: 'flex', gap: '1rem' }}>
+           {!finalRaffleId && (
+              <Link href="/admin/raffles" className="btn-save-pro">🎁 Proclaman Nuevo</Link>
+           )}
+           {finalRaffleId && (
+              <button 
+                onClick={() => {
+                  localStorage.removeItem('lastRaffleId');
+                  router.push('/admin/winners');
+                }} 
+                className="btn-cancel-pro"
+              >
+                Volver al Listado
+              </button>
+           )}
+         </div>
       </header>
 
-      <div className="card-glass-pro">
-         {/* PASO 1 */}
-         <div style={{ marginBottom: '3rem' }}>
-            <h3 className="section-title-cyan">1. BUSCAR TICKET AFORTUNADO</h3>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-               <input 
-                  type="text" 
-                  placeholder="Código de Ticket (Ej: DYG-MAR26-0001)" 
-                  className="form-input-pro" 
-                  value={ticketSearch}
-                  onChange={e => setTicketSearch(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && searchWinnerTicket()}
-               />
-               <button onClick={searchWinnerTicket} className="btn-search-glow" disabled={loading}>
-                  {loading ? '...' : 'BUSCAR'}
-               </button>
-            </div>
+      {/* VISTA 1: LISTADO SI NO HAY CONTEXTO */}
+      {!finalRaffleId ? (
+         <div className="table-card-pro">
+            <table className="admin-table-pro">
+               <thead>
+                  <tr>
+                     <th>Foto</th>
+                     <th>Ganador</th>
+                     <th>Premio</th>
+                     <th>Ticket</th>
+                     <th>Publicado</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  {loadingWinners ? (
+                    <tr><td colSpan={5} style={{textAlign:'center', padding:'3rem'}}>Cargando...</td></tr>
+                  ) : (!existingWinners || existingWinners.length === 0) ? (
+                    <tr><td colSpan={5} style={{textAlign:'center', padding:'3rem'}}>Aún no hay ganadores.</td></tr>
+                  ) : (
+                    existingWinners.map((w, i) => (
+                      <tr key={i}>
+                        <td style={{width:'80px'}}>
+                           <img src={w.winner_image_url} style={{width:'60px', height:'40px', objectFit:'cover', borderRadius:'0.5rem'}} alt="Winner" />
+                        </td>
+                        <td style={{fontWeight:800}}>{w.visible_name}</td>
+                        <td>{w.raffle?.prize_name || 'Premio'}</td>
+                        <td style={{color:'var(--accent-cyan)', fontWeight:900}}>{w.visible_ticket_code}</td>
+                        <td>{new Date(w.published_at).toLocaleDateString()}</td>
+                      </tr>
+                    ))
+                  )}
+               </tbody>
+            </table>
          </div>
-
-         {/* RESULTADO BUSQUEDA */}
-         {foundTicket && (
-            <div className="winner-found-box animate-scale-in">
-               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                      <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 900, color: 'var(--accent-yellow)' }}>¡Ticket Encontrado!</p>
-                      <h4 style={{ fontWeight: 950, fontSize: '2.2rem', margin: '0.4rem 0' }}>{foundTicket.participants.first_name} {foundTicket.participants.last_name}</h4>
-                      <div style={{ display: 'flex', gap: '1.5rem', opacity: 0.8 }}>
-                         <span>🎫 {foundTicket.ticket_code}</span>
-                         <span>📄 DNI: {foundTicket.participants.dni}</span>
-                      </div>
-                  </div>
-                  <div style={{ fontSize: '5rem' }}>✨</div>
-               </div>
-            </div>
-         )}
-
-         {/* PASO 2 */}
-         {foundTicket && (
-            <div className="animate-fade-in" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '3rem' }}>
-               <h3 className="section-title-cyan">2. DETALLES DE LA PREMIACIÓN</h3>
-               
-               <div className="form-group" style={{ marginBottom: '2rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.8rem', color: '#94a3b8', fontWeight: 800 }}>Mensaje / Testimonio del Ganador</label>
-                  <textarea 
-                     placeholder="Ej: ¡Cumplimos el sueño! Camioneta 0km entregada en tiempo record." 
+      ) : (
+         /* VISTA 2: FORMULARIO SI HAY CONTEXTO */
+         <div className="card-glass-pro">
+            {/* PASO 1 */}
+            <div style={{ marginBottom: '3rem' }}>
+               <h3 className="section-title-cyan">1. BUSCAR TICKET AFORTUNADO</h3>
+               <div style={{ display: 'flex', gap: '1rem' }}>
+                  <input 
+                     type="text" 
+                     placeholder="Código de Ticket (Ej: DYG-MAR26-0001)" 
                      className="form-input-pro" 
-                     style={{ height: '120px' }} 
-                     value={testimonial}
-                     onChange={e => setTestimonial(e.target.value)}
+                     value={ticketSearch}
+                     onChange={e => setTicketSearch(e.target.value)}
+                     onKeyPress={(e) => e.key === 'Enter' && searchWinnerTicket()}
                   />
+                  <button onClick={searchWinnerTicket} className="btn-search-glow" disabled={loading}>
+                     {loading ? '...' : 'BUSCAR'}
+                  </button>
                </div>
+            </div>
 
-               <div className="form-group" style={{ marginBottom: '3rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.8rem', color: '#94a3b8', fontWeight: 800 }}>Foto de la Entrega (Evidencia)</label>
-                  <div className="file-box-pro">
-                     <p style={{ marginBottom: '1rem', opacity: 0.6 }}>{uploading ? 'Subiendo...' : imageUrl ? '✅ Imagen Lista' : 'Selecciona una foto del ganador'}</p>
-                     <input type="file" onChange={handleImageUpload} disabled={uploading} />
-                     {imageUrl && <img src={imageUrl} style={{ height: '100px', marginTop: '1rem', borderRadius: '0.5rem' }} alt="Winner preview" />}
+            {/* RESULTADO BUSQUEDA */}
+            {foundTicket && (
+               <div className="winner-found-box animate-scale-in">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                     <div>
+                        <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 900, color: 'var(--accent-yellow)' }}>¡Ticket Encontrado!</p>
+                        <h4 style={{ fontWeight: 950, fontSize: '2.2rem', margin: '0.4rem 0' }}>{foundTicket.participants.first_name} {foundTicket.participants.last_name}</h4>
+                        <div style={{ display: 'flex', gap: '1.5rem', opacity: 0.8 }}>
+                           <span>🎫 {foundTicket.ticket_code}</span>
+                           <span>📄 DNI: {foundTicket.participants.dni}</span>
+                        </div>
+                     </div>
+                     <div style={{ fontSize: '5rem' }}>✨</div>
                   </div>
                </div>
+            )}
 
-               <button 
-                  onClick={publishWinner} 
-                  className="btn-proclaim-glow"
-                  disabled={loading}
-               >
-                  {loading ? 'PUBLICANDO...' : 'PROCLAMAR GRAN GANADOR 🏆'}
-               </button>
-            </div>
-         )}
-      </div>
+            {/* PASO 2 */}
+            {foundTicket && (
+               <div className="animate-fade-in" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '3rem' }}>
+                  <h3 className="section-title-cyan">2. DETALLES DE LA PREMIACIÓN</h3>
+                  
+                  <div className="form-group" style={{ marginBottom: '2rem' }}>
+                     <label style={{ display: 'block', marginBottom: '0.8rem', color: '#94a3b8', fontWeight: 800 }}>Mensaje / Testimonio del Ganador</label>
+                     <textarea 
+                        placeholder="Ej: ¡Cumplimos el sueño! Camioneta 0km entregada en tiempo record." 
+                        className="form-input-pro" 
+                        style={{ height: '120px' }} 
+                        value={testimonial}
+                        onChange={e => setTestimonial(e.target.value)}
+                     />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '3rem' }}>
+                     <label style={{ display: 'block', marginBottom: '0.8rem', color: '#94a3b8', fontWeight: 800 }}>Foto de la Entrega (Evidencia)</label>
+                     <div className="file-box-pro">
+                        <p style={{ marginBottom: '1rem', opacity: 0.6 }}>{uploading ? 'Subiendo...' : imageUrl ? '✅ Imagen Lista' : 'Selecciona una foto del ganador'}</p>
+                        <input type="file" onChange={handleImageUpload} disabled={uploading} />
+                        {imageUrl && <img src={imageUrl} style={{ height: '100px', marginTop: '1rem', borderRadius: '0.5rem' }} alt="Winner preview" />}
+                     </div>
+                  </div>
+
+                  <button 
+                     onClick={publishWinner} 
+                     className="btn-proclaim-glow"
+                     disabled={loading}
+                  >
+                     {loading ? 'PUBLICANDO...' : 'PROCLAMAR GRAN GANADOR 🏆'}
+                  </button>
+               </div>
+            )}
+         </div>
+      )}
 
       <style jsx>{`
         .section-title-cyan { color: #1e1b4b; font-size: 0.9rem; font-weight: 950; letter-spacing: 2px; margin-bottom: 2rem; }
