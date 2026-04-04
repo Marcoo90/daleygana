@@ -4,6 +4,7 @@ import Link from 'next/link';
 import './globals.css';
 import { getImageUrl, formatDate } from '@/lib/utils';
 import { getActiveCampaignData, getWinnersList } from '@/lib/api/public';
+import Countdown from '@/lib/components/Countdown';
 
 export default function Home() {
   const [activeCampaign, setActiveCampaign] = useState<any>(null);
@@ -133,6 +134,11 @@ export default function Home() {
               ))}
             </div>
           </section>
+        )}
+
+        {/* CONTADOR DE CIERRE DE VENTAS */}
+        {campaign?.ticket_sales_end_at && (
+           <Countdown targetDate={campaign.ticket_sales_end_at} />
         )}
 
         <div className="alert-fraud">

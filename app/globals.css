@@ -305,6 +305,11 @@ h1, h2, h3, h4 {
   transition: all 0.3s;
 }
 
+.form-input option {
+  background-color: #0a0a14;
+  color: #fff;
+}
+
 .form-input:focus {
   outline: none;
   border-color: var(--accent-pink);

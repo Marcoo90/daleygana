@@ -66,10 +66,10 @@ export default function PremiosPage() {
          {/* Sección Multiplicador - PACKS DINÁMICOS desde BD */}
          <section id="tienda" className="upsell-section" style={{ background: 'rgba(0,0,0,0.3)', padding: '5rem 3rem' }}>
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-               <h2 className="hero-title" style={{ fontSize: '3rem', textShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>MULTIPLICA TUS PROBABILIDADES</h2>
+               {/* <h2 className="hero-title" style={{ fontSize: '3rem', textShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>MULTIPLICA TUS PROBABILIDADES</h2>
                <p style={{ color: '#fff', fontWeight: 600, maxWidth: '750px', margin: '1rem auto' }}>
                   ¿Ya estás registrado? Compra packs adicionales y no dejes que el premio de tus sueños se escape.
-               </p>
+               </p>*/}
             </div>
 
             {/* Packs dinámicos (de BD) o fallback estático */}
@@ -99,7 +99,7 @@ export default function PremiosPage() {
                return (
                   <div style={{ textAlign: 'center', padding: '3rem', background: 'rgba(0,0,0,0.3)', borderRadius: '2rem', maxWidth: '700px', margin: '0 auto' }}>
                      <p style={{ color: '#94a3b8', fontWeight: 600 }}>Los packs de tickets estarán disponibles próximamente.</p>
-                     <Link href="/registro?type=base" className="btn-cyan" style={{ display: 'inline-block', marginTop: '1rem' }}>Registrarme con S/ 40</Link>
+                     <Link href="/registro?type=base" className="btn-cyan" style={{ display: 'inline-block', marginTop: '1rem' }}>PARTICIPAR AHORA </Link>
                   </div>
                );
             })()}
