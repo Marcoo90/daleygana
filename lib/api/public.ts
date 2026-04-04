@@ -8,6 +8,7 @@
 export async function getActiveCampaignData() {
   try {
     const res = await fetch('/api/public/active-campaign');
+    if (res.status === 404) return null;
     if (!res.ok) throw new Error('Error al obtener campaña');
     return await res.json();
   } catch (err) {

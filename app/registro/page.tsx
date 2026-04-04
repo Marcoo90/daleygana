@@ -217,7 +217,7 @@ function RegistroContent() {
             {(type === 'base' || isDniVerified) && (
               <>
                 {type === 'base' && (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="grid-responsive" style={{ marginBottom: '1.2rem' }}>
                     <input type="hidden" name="dni_verified" value={dniSourceVerified ? 'true' : 'false'} />
                     <div className="form-group">
                       <label className="form-label">
@@ -260,7 +260,7 @@ function RegistroContent() {
                   </>
                 )}
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="grid-responsive" style={{ marginBottom: '1.2rem' }}>
                   <div className="form-group">
                     <label className="form-label">WhatsApp (Celular)</label>
                     <input
@@ -322,7 +322,7 @@ function RegistroContent() {
 
             <div className="yape-box" style={{ border: '2px solid #742384' }}>
               <p style={{ color: '#ffffffff', fontWeight: 950, marginBottom: '0.5rem' }}>PAGA CON YAPE/PLIN</p>
-              <img src="/images/plin.png" alt="QR" style={{ width: '160px', borderRadius: '1rem' }} />
+              <img src="/images/plin.png" alt="QR" style={{ width: '160px', borderRadius: '1rem', display: 'block', margin: '0 auto' }} />
               <p style={{ marginTop: '1rem', fontWeight: 800 }}>CONSORCIO DALE Y GANA S.A.C</p>
               <h4 style={{ fontSize: '2rem', marginTop: '0.5rem' }}>945 278 476</h4>
             </div>

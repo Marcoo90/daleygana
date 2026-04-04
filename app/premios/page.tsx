@@ -27,32 +27,53 @@ export default function PremiosPage() {
    return (
       <div className="container" style={{ paddingBottom: '6rem' }}>
 
-         {/* Hero Sección Premios Dinámico */}
-         <section className="premios-hero" style={{ background: campaign?.hero_image ? `url(${campaign.hero_image}) center/cover no-repeat` : undefined }}>
+         {/* Hero Sección Premios */}
+         <section
+            className="premios-hero"
+            style={{
+               background: campaign?.hero_image
+                  ? `url(${campaign.hero_image}) center/cover no-repeat`
+                  : undefined
+            }}
+         >
             <div className="premios-hero-content">
                <span className="benefit-badge">LA MEJOR FORMA DE GANAR ES ARRIESGARSE</span>
-               <h2 className="hero-mega-title" style={{ textAlign: 'left', fontSize: 'clamp(2.5rem, 6vw, 5rem)', textShadow: '2px 4px 10px #000' }}>
+               <h2
+                  className="hero-mega-title"
+                  style={{ textAlign: 'left', marginBottom: '1rem' }}
+               >
                   {campaign?.name || 'PRÓXIMO EVENTO'}
                </h2>
-               <p style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 900, marginBottom: '2rem', textShadow: '0 2px 5px #000' }}>
-                  TODOS LOS MESES <span style={{ color: 'var(--accent-cyan)' }}>sorteamos premios increíbles</span>
+               <p style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, textShadow: '0 2px 5px rgba(0,0,0,0.5)' }}>
+                  TODOS LOS MESES{' '}
+                  <span style={{ color: 'var(--accent-cyan)' }}>sorteamos premios increíbles</span>
                </p>
-               {/* <Link href="#tienda" className="btn-green-light" style={{ display: 'inline-block' }}>Aumentar mis chances 🎟️</Link>*/}
             </div>
-            <div className="overlay-dark" style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1 }}></div>
+            {/* overlay solo cuando hay imagen de fondo */}
+            {campaign?.hero_image && (
+               <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 1 }} />
+            )}
          </section>
 
-         {/* Grid de Premios Dinámico del CMS */}
-         <div className="secondary-prize-grid" style={{ gap: '2rem', marginBottom: '6rem' }}>
+         {/* Grid de Premios */}
+         <div className="secondary-prize-grid">
             {loading ? (
-               <p style={{ color: '#fff', textAlign: 'center', gridColumn: '1/-1' }}>Buscando premios...</p>
+               <p style={{ color: '#fff', textAlign: 'center', gridColumn: '1 / -1', padding: '3rem', fontSize: '1.1rem' }}>
+                  Buscando premios...
+               </p>
             ) : raffles.length === 0 ? (
-               <p style={{ color: '#fff', textAlign: 'center', gridColumn: '1/-1' }}>No hay sorteos programados por ahora.</p>
+               <p style={{ color: 'rgba(255,255,255,0.7)', textAlign: 'center', gridColumn: '1 / -1', padding: '3rem', fontSize: '1.1rem' }}>
+                  No hay sorteos programados por ahora.
+               </p>
             ) : raffles.map((r: any) => (
                <div className="prize-card-dynamic" key={r.id}>
                   <div className="prize-card-header">
                      <div className="prize-card-qty">{r.draw_order}</div>
-                     <img src={getImageUrl(r.prize_image)} className="prize-card-img-pro" alt={r.prize_name} />
+                     <img
+                        src={getImageUrl(r.prize_image)}
+                        className="prize-card-img-pro"
+                        alt={r.prize_name}
+                     />
                   </div>
                   <div className="prize-card-body-pro">
                      <span className="prize-date-label">SORTEO: {formatDate(campaign?.draw_at)}</span>
@@ -63,66 +84,54 @@ export default function PremiosPage() {
             ))}
          </div>
 
-         {/* Sección Multiplicador - PACKS DINÁMICOS desde BD */}
-         <section id="tienda" className="upsell-section" style={{ background: 'rgba(0,0,0,0.3)', padding: '5rem 3rem' }}>
-            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-               {/* <h2 className="hero-title" style={{ fontSize: '3rem', textShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>MULTIPLICA TUS PROBABILIDADES</h2>
-               <p style={{ color: '#fff', fontWeight: 600, maxWidth: '750px', margin: '1rem auto' }}>
-                  ¿Ya estás registrado? Compra packs adicionales y no dejes que el premio de tus sueños se escape.
-               </p>*/}
-            </div>
-
-            {/* Packs dinámicos (de BD) o fallback estático */}
+         {/* Sección Packs */}
+         <section id="tienda" className="upsell-section">
             {(() => {
                const packs = (activeData?.products || []).filter((p: any) => p.product_type === 'ticket_pack');
                const packColors = ['purple', 'yellow', 'cyan'];
                const packLabels = ['COMBO TENGO FE', 'PACK FORTUNA', 'COMBO GANADOR'];
                const packBtns = ['COMPRAR EXTRA', '¡SÚPER OFERTA!', 'X3 SUERTE'];
-               const btnColors = ['#fff', 'var(--accent-cyan)', '#fff'];
 
                if (packs.length > 0) {
                   return (
-                     <div className="grid-3" style={{ maxWidth: '1100px', margin: '0 auto' }}>
+                     <div className="grid-3">
                         {packs.map((p: any, idx: number) => (
-                           <Link key={p.id} href={`/registro?type=pack&id=${p.id}`} className={`pack-card-premium ${packColors[idx % packColors.length]}`}>
+                           <Link
+                              key={p.id}
+                              href={`/registro?type=pack&id=${p.id}`}
+                              className={`pack-card-premium ${packColors[idx % packColors.length]}`}
+                           >
                               <div className="pack-header">{packLabels[idx] || p.name.toUpperCase()}</div>
-                              <div className="pack-tickets" style={{ fontSize: '3.5rem' }}>{p.tickets_count} TICKETS</div>
-                              <div className="pack-price" style={{ fontSize: '2.5rem' }}>S/ {p.price.toFixed(2)}</div>
-                              <div className="pack-btn" style={{ background: btnColors[idx % btnColors.length], color: '#000' }}>{packBtns[idx] || 'COMPRAR'}</div>
+                              <div className="pack-tickets">{p.tickets_count} TICKETS</div>
+                              <div className="pack-price">S/ {p.price.toFixed(2)}</div>
+                              <div className="pack-btn">{packBtns[idx] || 'COMPRAR'}</div>
                            </Link>
                         ))}
                      </div>
                   );
                }
 
-               // Fallback si aún no se configuraron packs en el admin
                return (
-                  <div style={{ textAlign: 'center', padding: '3rem', background: 'rgba(0,0,0,0.3)', borderRadius: '2rem', maxWidth: '700px', margin: '0 auto' }}>
-                     <p style={{ color: '#94a3b8', fontWeight: 600 }}>Los packs de tickets estarán disponibles próximamente.</p>
-                     <Link href="/registro?type=base" className="btn-cyan" style={{ display: 'inline-block', marginTop: '1rem' }}>PARTICIPAR AHORA </Link>
+                  <div className="fallback-container">
+                     <p className="fallback-text">Los packs de tickets estarán disponibles próximamente.</p>
+                     <Link href="/registro?type=base" className="btn-premios-cta">
+                        PARTICIPAR AHORA
+                     </Link>
                   </div>
                );
             })()}
          </section>
 
-         <div className="alert-fraud" style={{ marginTop: '5rem' }}>
+         {/* Alerta de Seguridad */}
+         <div className="alert-fraud">
             <div className="alert-fraud-title">⚠️ ¡ALERTA DE SEGURIDAD! ⚠️</div>
-            <p className="alert-fraud-text">Verifica que el pago al aumentar tus tickets sea a nombre de:</p>
-            <div className="alert-fraud-company" style={{ fontSize: '1.8rem' }}>CONSORCIO DALE Y GANA S.A.C</div>
+            <p className="alert-fraud-text">Verifica siempre que el pago sea a nombre de:</p>
+            <div className="alert-fraud-company">CONSORCIO DALE Y GANA S.A.C</div>
+            <p className="alert-fraud-text" style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
+               Si sale otro nombre, ¡ESTÁS SIENDO ESTAFADO!
+            </p>
          </div>
 
-         <style jsx>{`
-         .prize-card-dynamic { background: #fff; border-radius: 2rem; overflow: hidden; transition: transform 0.3s; box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
-         .prize-card-dynamic:hover { transform: translateY(-10px); }
-         .prize-card-header { position: relative; height: 260px; background: #000; }
-         .prize-card-img-pro { width: 100%; height: 100%; object-fit: contain; }
-         .prize-card-qty { position: absolute; bottom: 0; left: 0; background: var(--accent-cyan); color: #000; font-size: 3rem; font-weight: 950; padding: 0.5rem 1.5rem; font-family: 'Outfit'; border-top-right-radius: 1.5rem; line-height: 1; z-index: 2; }
-         .prize-card-body-pro { padding: 2rem; }
-         .prize-date-label { color: #64748b; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; margin-bottom: 0.5rem; display: block; }
-         .prize-name-pro { color: #0f172a; font-size: 1.6rem; font-weight: 950; margin-bottom: 0.8rem; line-height: 1.2; text-transform: uppercase; }
-         .prize-desc-pro { color: #64748b; font-size: 0.95rem; line-height: 1.6; }
-         .hero-mega-title { z-index: 2; position: relative; }
-      `}</style>
       </div>
    );
 }

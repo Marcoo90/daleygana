@@ -48,47 +48,41 @@ export default function Home() {
         </div>
 
         {/* CONTENEDOR ÚNICO DE CAMPAÑA - SIN REPETICIONES */}
-        <section style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', padding: '0 20px' }}>
+        <section style={{ maxWidth: '1400px', margin: '0 auto', position: 'relative', padding: '0 20px' }}>
 
           {loading ? (
-            <div style={{ height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+            <div className="loading-state">
               <div className="animate-pulse">Cargando Sorteo...</div>
             </div>
           ) : (
-            <div className="unified-card" style={{ padding: '4rem 3rem' }}>
+            <div className="unified-card">
 
-              <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-                <div className="pill-event-top" style={{ marginBottom: '2rem' }}>
+              <div className="card-header-v5">
+                <div className="pill-event-top">
                   <span>PARA PARTICIPAR: REGISTRATE SIN MIEDO AL EXITO</span>
-                  <span style={{ color: '#eab308' }}>⭐</span>
+                  <span className="star-icon">⭐</span>
                 </div>
 
-                <div className="price-layout-v5" style={{ marginBottom: '1.5rem' }}>
+                <div className="price-layout-v5">
                   <span className="currency-v5">S/</span>
                   <span className="amount-v5">40.00</span>
                 </div>
 
-                <p style={{ color: '#fff', fontSize: '1.4rem', opacity: 0.9, marginBottom: '2.5rem', fontWeight: 700 }}>
+                <p className="card-hero-description">
                   Acceso Total a todos los sorteos de la campaña
                 </p>
-                {/*
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center', marginBottom: '4rem' }}>
-                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.2rem', borderRadius: '1rem', color: '#fff', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.9rem' }}>✅ 1 Ticket Inicial</div>
-                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.2rem', borderRadius: '1rem', color: '#fff', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.9rem' }}>✅ Sorteos Diarios</div>
-                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.2rem', borderRadius: '1rem', color: '#fff', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.9rem' }}>✅ Packs de Descuento</div>
-                </div>*/}
               </div>
 
               {/* GRID DE PREMIOS ESTILO IMAGEN 13 */}
               {raffles.length > 0 && (
-                <div style={{ marginBottom: '4.5rem' }}>
-                  <h3 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: 950, marginBottom: '2rem', textAlign: 'center', letterSpacing: '1px' }}>
-                    🎁 <span style={{ color: 'var(--accent-cyan)' }}>INCREIBLES PREMIOS</span> QUE PUEDE SER TUYO:
+                <div className="prizes-section-v5">
+                  <h3 className="section-subtitle-white">
+                    🎁 <span className="accent-cyan-text">INCREIBLES PREMIOS</span> QUE PUEDEN SER TUYOS:
                   </h3>
 
                   <div className="v3-prize-grid">
                     {raffles.map((r: any) => (
-                      <div key={r.id} className="v3-prize-card" style={{ border: '1px solid rgba(0, 229, 255, 0.15)' }}>
+                      <div key={r.id} className="v3-prize-card">
                         <img
                           src={getImageUrl(r.prize_image)}
                           className="v3-prize-img"
@@ -108,7 +102,7 @@ export default function Home() {
                 </div>
               )}
 
-              <Link href="/registro?type=base" className="btn-cyan-v5" style={{ textDecoration: 'none', display: 'flex', height: '85px', fontSize: '1.8rem', alignItems: 'center', justifyContent: 'center', boxShadow: '0 20px 40px rgba(0, 229, 255, 0.3)' }}>
+              <Link href="/registro?type=base" className="btn-cyan-v5">
                 ¡REGISTRARME AHORA!
               </Link>
             </div>
@@ -141,21 +135,25 @@ export default function Home() {
            <Countdown targetDate={campaign.ticket_sales_end_at} />
         )}
 
+
+        {/* ALERTA DE SEGURIDAD */}
         <div className="alert-fraud">
           <div className="alert-fraud-title">⚠️ ¡ALERTA DE SEGURIDAD! ⚠️</div>
           <p className="alert-fraud-text">Verifica siempre que el pago sea a nombre de:</p>
           <div className="alert-fraud-company">CONSORCIO DALE Y GANA S.A.C</div>
-          <p className="alert-fraud-footer">Si sale otro nombre, ¡ESTÁS SIENDO ESTAFADO!</p>
+          <p className="alert-fraud-text" style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
+            Si sale otro nombre, ¡ESTÁS SIENDO ESTAFADO!
+          </p>
         </div>
 
-        {/* SECCIÓN GANADORES - EFECTO VOID FLOTANTE */}
+        {/* SECCIÓN GANADORES */}
         <section style={{ padding: '6rem 0', position: 'relative', overflow: 'hidden' }}>
           {/* Luces de acento de fondo (Blobs) */}
           <div style={{ position: 'absolute', top: '50%', left: '20%', width: '300px', height: '300px', background: 'var(--accent-purple)', filter: 'blur(150px)', opacity: 0.1, borderRadius: '50%', zIndex: 0 }}></div>
           <div style={{ position: 'absolute', top: '20%', right: '10%', width: '400px', height: '400px', background: 'var(--accent-cyan)', filter: 'blur(180px)', opacity: 0.1, borderRadius: '50%', zIndex: 0 }}></div>
 
           <div className="container" style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
-            <h2 className="hero-title" style={{ fontSize: '2.8rem', marginBottom: '4rem' }}>
+            <h2 className="hero-mega-title" style={{ fontSize: '3rem', marginBottom: '4.5rem' }}>
               GALERÍA DE NUESTROS GANADORES 📸
             </h2>
 

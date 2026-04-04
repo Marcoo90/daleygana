@@ -64,15 +64,15 @@ export default function ConsultaPage() {
          <div style={{ marginBottom: '2rem' }}>
             <span style={{ fontSize: '4rem', filter: 'drop-shadow(0 0 10px rgba(0, 229, 255, 0.4))' }}>🎟️</span>
          </div>
-         <h2 style={{ fontSize: '2.2rem', color: '#fff', marginBottom: '1.2rem', fontWeight: 900 }}>
+         <h2 className="hero-compact-title">
             Mis Tickets de Sorteo
          </h2>
-         <p style={{ color: '#cbd5e1', marginBottom: '2.5rem', fontSize: '1.1rem' }}>
+         <p className="hero-compact-subtitle">
             Ingresa tu DNI para verificar tu participación activa y ver tus números.
          </p>
 
-         <form onSubmit={handleSearch} style={{ maxWidth: '600px', margin: '0 auto' }}>
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'stretch' }}>
+         <form onSubmit={handleSearch} className="consulta-form-wrapper">
+            <div className="search-group">
               <input 
                 type="text" 
                 className="consulta-input" 
@@ -84,13 +84,11 @@ export default function ConsultaPage() {
                 }}
                 maxLength={8}
                 required 
-                style={{ flex: 1, margin: 0, height: '64px', fontSize: '1.2rem', padding: '0 1.5rem', background: '#fff', color: '#000' }}
               />
               <button 
                 type="submit" 
                 className="consulta-btn-blue" 
-                disabled={isLoading} 
-                style={{ width: 'auto', padding: '0 2.5rem', height: '64px', margin: 0, borderRadius: '0.8rem', fontSize: '1.1rem', fontWeight: 900, whiteSpace: 'nowrap' }}
+                disabled={isLoading}
               >
                  {isLoading ? '...' : 'CONSULTAR'}
               </button>
@@ -99,7 +97,7 @@ export default function ConsultaPage() {
 
          {hasSearched && errorMsg && (
             <div className="animate-fade-in" style={{ marginTop: '2rem' }}>
-               <div className="consulta-error-box" style={{ background: 'rgba(185, 28, 28, 0.1)', border: '2px solid #ef4444' }}>
+               <div className="consulta-error-box" style={{ background: 'rgba(185, 28, 28, 0.1)', border: '2px dashed #ef4444', padding: '2rem', borderRadius: '1.5rem' }}>
                   <h3 style={{ fontSize: '1.8rem', color: '#ff4d4d', marginBottom: '1rem', fontWeight: 900 }}>{errorMsg}</h3>
                   <p style={{ color: '#e2e8f0', fontSize: '1.1rem' }}>Verifica tu número de DNI o contáctate con nuestro soporte por WhatsApp si crees que es un error.</p>
                </div>

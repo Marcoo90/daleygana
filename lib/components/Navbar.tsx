@@ -26,22 +26,6 @@ export default function Navbar() {
         <Link href="/consulta" className="nav-link highlight">🎫 Ver Mis Tickets</Link>
       </div>
       
-      <style jsx>{`
-        .topbar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.5rem 0;
-          flex-wrap: wrap;
-          gap: 1.5rem;
-        }
-        @media (max-width: 600px) {
-          .topbar {
-            flex-direction: column;
-            text-align: center;
-          }
-        }
-      `}</style>
     </nav>
   );
 }

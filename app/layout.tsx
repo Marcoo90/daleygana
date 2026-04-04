@@ -17,6 +17,12 @@ export const metadata: Metadata = {
   description: "Dale y Gana",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 import Navbar from "@/lib/components/Navbar";
 
 export default function RootLayout({
