@@ -26,7 +26,7 @@ export default function Home() {
 
       const winData = await getWinnersList();
       setWinners(winData);
-      
+
       setLoading(false);
     };
     fetchData();
@@ -42,13 +42,13 @@ export default function Home() {
 
         <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
           <h1 className="hero-mega-title">
-            ¡SORTEO {campaign?.name?.toUpperCase() || 'MARZO'}!
+            ¡PREMIOS DALE Y GANA <br />  {campaign?.name?.toUpperCase() || 'MARZO'}!
           </h1>
           <span className="hero-subtitle">CON LA SUERTE DE ALVARO</span>
         </div>
 
         {/* CONTENEDOR ÚNICO DE CAMPAÑA - SIN REPETICIONES */}
-        <section style={{ maxWidth: '1400px', margin: '0 auto', position: 'relative', padding: '0 20px' }}>
+        <section className="campaign-section" style={{ maxWidth: '1400px', margin: '0 auto', position: 'relative', padding: '0 20px' }}>
 
           {loading ? (
             <div className="loading-state">
@@ -59,7 +59,7 @@ export default function Home() {
 
               <div className="card-header-v5">
                 <div className="pill-event-top">
-                  <span>PARA PARTICIPAR: REGISTRATE SIN MIEDO AL EXITO</span>
+                  <span>PARA PARTICIPAR: REGÍSTRATE SIN MIEDO AL EXITO</span>
                   <span className="star-icon">⭐</span>
                 </div>
 
@@ -103,7 +103,7 @@ export default function Home() {
               )}
 
               <Link href="/registro?type=base" className="btn-cyan-v5">
-                ¡REGISTRARME AHORA!
+                ¡PARTICIPAR AHORA!
               </Link>
             </div>
           )}
@@ -132,7 +132,7 @@ export default function Home() {
 
         {/* CONTADOR DE CIERRE DE VENTAS */}
         {campaign?.ticket_sales_end_at && (
-           <Countdown targetDate={campaign.ticket_sales_end_at} />
+          <Countdown targetDate={campaign.ticket_sales_end_at} />
         )}
 
 

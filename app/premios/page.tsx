@@ -37,7 +37,7 @@ export default function PremiosPage() {
             }}
          >
             <div className="premios-hero-content">
-               <span className="benefit-badge">LA MEJOR FORMA DE GANAR ES ARRIESGARSE</span>
+               <span className="benefit-badge">LA MEJOR FORMA DE GANAR ES ARRIESGANDOTE</span>
                <h2
                   className="hero-mega-title"
                   style={{ textAlign: 'left', marginBottom: '1rem' }}
@@ -115,7 +115,7 @@ export default function PremiosPage() {
                   <div className="fallback-container">
                      <p className="fallback-text">Los packs de tickets estarán disponibles próximamente.</p>
                      <Link href="/registro?type=base" className="btn-premios-cta">
-                        PARTICIPAR AHORA
+                        PARTICIPA AHORA
                      </Link>
                   </div>
                );
