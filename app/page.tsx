@@ -42,7 +42,7 @@ export default function Home() {
 
         <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
           <h1 className="hero-mega-title">
-            ¡PREMIOS DALE Y GANA <br />  {campaign?.name?.toUpperCase() || 'MARZO'}!
+            ¡PREMIOS POR EL DÍA DE LA MADRE <br />  {campaign?.name?.toUpperCase() || 'MARZO'}!
           </h1>
           <span className="hero-subtitle">CON LA SUERTE DE ALVARO</span>
         </div>
