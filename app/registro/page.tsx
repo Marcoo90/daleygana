@@ -316,15 +316,15 @@ function RegistroContent() {
             <h3 style={{ color: 'var(--accent-cyan)' }}>SI AÚN NO PAGASTE...</h3>
             <div style={{ margin: '1.5rem 0', padding: '1rem', background: '#111', borderRadius: '1rem' }}>
               <p style={{ fontSize: '1rem' }}>DALE Y GANA CON SOLO:</p>
-              <p style={{ fontSize: '4rem', fontWeight: 950 }}>{type === 'base' ? 'S/ 40' : 'PACK'}</p>
+              <p style={{ fontSize: '4rem', fontWeight: 950 }}>{type === 'base' ? 'S/ 30' : 'PACK'}</p>
               <p style={{ color: 'var(--accent-yellow)', fontWeight: 800 }}>{type === 'base' ? 'NO TE QUEDES FUERA' : 'MÁS OPORTUNIDADES'}</p>
             </div>
 
             <div className="yape-box" style={{ border: '2px solid #742384' }}>
-              <p style={{ color: '#ffffffff', fontWeight: 950, marginBottom: '0.5rem' }}>PAGA CON YAPE/PLIN</p>
-              <img src="/images/plin.png" alt="QR" style={{ width: '160px', borderRadius: '1rem', display: 'block', margin: '0 auto' }} />
-              <p style={{ marginTop: '1rem', fontWeight: 800 }}>CONSORCIO DALE Y GANA S.A.C</p>
-              <h4 style={{ fontSize: '2rem', marginTop: '0.5rem' }}>945 278 476</h4>
+              <p style={{ color: '#ffffffff', fontWeight: 950, marginBottom: '0.5rem' }}>PAGA CON YAPE</p>
+              <img src="/images/yape.jpeg" alt="QR" style={{ width: '160px', borderRadius: '1rem', display: 'block', margin: '0 auto' }} />
+              <p style={{ marginTop: '1rem', fontWeight: 800 }}>A NOMBRE DE: ALEX ALVARO GONZALES</p>
+              <h4 style={{ fontSize: '2rem', marginTop: '0.5rem' }}>959721395</h4>
             </div>
           </div>
         </div>

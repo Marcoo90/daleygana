@@ -65,7 +65,7 @@ export default function Home() {
 
                 <div className="price-layout-v5">
                   <span className="currency-v5">S/</span>
-                  <span className="amount-v5">40.00</span>
+                  <span className="amount-v5">30.00</span>
                 </div>
 
                 <p className="card-hero-description">
@@ -140,7 +140,7 @@ export default function Home() {
         <div className="alert-fraud">
           <div className="alert-fraud-title">⚠️ ¡ALERTA DE SEGURIDAD! ⚠️</div>
           <p className="alert-fraud-text">Verifica siempre que el pago sea a nombre de:</p>
-          <div className="alert-fraud-company">CONSORCIO DALE Y GANA S.A.C</div>
+          <div className="alert-fraud-company">ALEX ALVARO GONZALES</div>
           <p className="alert-fraud-text" style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
             Si sale otro nombre, ¡ESTÁS SIENDO ESTAFADO!
           </p>

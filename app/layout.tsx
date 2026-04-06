@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dale y Gana",
-  description: "Dale y Gana",
+  title: "Alvarito Premia",
+  description: "Alvarito Premia",
 };
 
 export const viewport = {
