@@ -126,7 +126,7 @@ export default function PremiosPage() {
          <div className="alert-fraud">
             <div className="alert-fraud-title">⚠️ ¡ALERTA DE SEGURIDAD! ⚠️</div>
             <p className="alert-fraud-text">Verifica siempre que el pago sea a nombre de:</p>
-            <div className="alert-fraud-company">CONSORCIO DALE Y GANA S.A.C</div>
+            <div className="alert-fraud-company">ALEX ALVARO GONZALES</div>
             <p className="alert-fraud-text" style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
                Si sale otro nombre, ¡ESTÁS SIENDO ESTAFADO!
             </p>
