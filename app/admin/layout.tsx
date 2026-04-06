@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
 import { useRouter, usePathname } from 'next/navigation';
+import AdminNotifications from '@/lib/components/AdminNotifications';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -125,6 +126,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {children}
         </div>
       </main>
+
+      {/* Sistema de Notificaciones de Registro en Tiempo Real */}
+      <AdminNotifications />
 
       <style jsx global>{`
         /* ===================================
