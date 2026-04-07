@@ -15,17 +15,17 @@ export default function Navbar() {
       </Link>
       <div className="nav-links">
         {pathname === '/' ? (
-           <>
-             <Link href="/premios" className="nav-link">Premios</Link>
-             <Link href="https://whatsapp.com" target="_blank" className="nav-link">📣 Canal Difusión</Link>
-             <Link href="/ganadores" className="nav-link">🏆 Ganadores</Link>
-           </>
+          <>
+            <Link href="/premios" className="nav-link">Premios</Link>
+            <Link href="https://wa.me/51953496746" target="_blank" className="nav-link">📞 consultas y dudas</Link>
+            <Link href="/ganadores" className="nav-link">🏆 Ganadores</Link>
+          </>
         ) : (
-           <Link href="/" className="nav-link">← Volver al Sorteo</Link>
+          <Link href="/" className="nav-link">← Volver al Sorteo</Link>
         )}
         <Link href="/consulta" className="nav-link highlight">🎫 Ver Mis Tickets</Link>
       </div>
-      
+
     </nav>
   );
 }
