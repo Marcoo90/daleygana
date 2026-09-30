@@ -25,7 +25,7 @@ export default function GanadoresPage() {
         <h2 className="hero-mega-title" style={{ fontSize: 'clamp(2.5rem, 7vw, 4.5rem)', margin: '0' }}>
           ¡NUESTROS GANADORES
         </h2>
-        <p style={{ color: '#fff', fontSize: '1.3rem', opacity: 0.9, marginTop: '1.5rem', maxWidth: '750px', margin: '1.5rem auto', fontWeight: 600 }}>
+        <p style={{ color: 'var(--text-sub)', fontSize: '1.3rem', marginTop: '1.5rem', maxWidth: '750px', margin: '1.5rem auto', fontWeight: 600 }}>
           ¡Felicitamos a todos los afortunados ganadores de nuestro gran sorteo! La transparencia es nuestra garantía, tú puedes ser el próximo.
         </p>
       </div>
@@ -62,30 +62,31 @@ export default function GanadoresPage() {
             </div>
           </div>
         )) : (
-          !loading && <p style={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center', gridColumn: '1 / -1', fontSize: '1.5rem', fontWeight: 700, padding: '4rem' }}>Aún no hay ganadores proclamados. ¡Tú podrías ser el siguiente!</p>
+          !loading && <p style={{ color: 'var(--text-muted)', textAlign: 'center', gridColumn: '1 / -1', fontSize: '1.5rem', fontWeight: 700, padding: '4rem' }}>Aún no hay ganadores proclamados. ¡Tú podrías ser el siguiente!</p>
         )}
       </div>
 
       <style jsx>{`
         .winner-card-premium {
-          background: rgba(15, 5, 25, 0.6);
+          background: var(--bg-card);
           border-radius: 2rem;
           overflow: hidden;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid var(--border-subtle);
           backdrop-filter: blur(20px);
           transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+          box-shadow: var(--card-shadow);
           position: relative;
         }
         .winner-card-premium:hover {
           transform: translateY(-12px);
-          border-color: var(--accent-cyan);
-          box-shadow: 0 30px 60px rgba(0, 229, 255, 0.2);
+          border-color: var(--accent-cyan-contrast);
+          box-shadow: var(--card-hover-shadow);
         }
         .card-image-wrapper {
           position: relative;
           height: 250px;
           overflow: hidden;
+          background: #000;
         }
         .winner-img-full {
           width: 100%;
@@ -100,14 +101,14 @@ export default function GanadoresPage() {
           position: absolute;
           top: 1rem;
           right: 1rem;
-          background: var(--accent-cyan);
-          color: #000;
+          background: var(--accent-cyan-contrast);
+          color: #fff;
           font-weight: 950;
           padding: 0.5rem 1rem;
           border-radius: 2rem;
           font-family: 'Outfit', sans-serif;
           font-size: 0.9rem;
-          box-shadow: 0 5px 15px rgba(0, 229, 255, 0.4);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         .card-info-pro {
           padding: 2rem;
@@ -115,13 +116,12 @@ export default function GanadoresPage() {
         }
         .winner-name {
           font-size: 1.8rem;
-          color: #fff;
+          color: var(--text-heading);
           margin-bottom: 0.5rem;
           font-weight: 900;
-          text-shadow: 0 0 10px rgba(255,255,255,0.2);
         }
         .winner-prize {
-          color: var(--accent-yellow);
+          color: var(--accent-yellow-contrast);
           font-size: 1.2rem;
           font-weight: 700;
           margin-bottom: 1.5rem;
@@ -139,14 +139,14 @@ export default function GanadoresPage() {
           font-weight: 800;
         }
         .meta-tag.region {
-          background: rgba(255, 255, 255, 0.05);
-          color: #cbd5e1;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: var(--bg-card-secondary);
+          color: var(--text-secondary);
+          border: 1px solid var(--border-subtle);
         }
         .meta-tag.status {
-          background: rgba(0, 229, 255, 0.1);
-          color: var(--accent-cyan);
-          border: 1px solid rgba(0, 229, 255, 0.3);
+          background: rgba(2, 132, 199, 0.12);
+          color: var(--accent-cyan-contrast);
+          border: 1px solid rgba(2, 132, 199, 0.3);
         }
       `}</style>
     </div>

@@ -16,16 +16,28 @@ export async function GET() {
       participants ( id, first_name, last_name, dni, whatsapp, department ),
       campaigns ( id, name, slug ),
       products ( id, name, price, product_type, tickets_count ),
-      payments ( id, receipt_path, status, amount, created_at )
+      payments ( id, receipt_path, status, amount, created_at ),
+      order_items ( id, quantity, unit_price, subtotal, raffle_id, raffles ( id, prize_name, prize_image ) )
     `)
     .order('created_at', { ascending: false });
 
-  if (error) {
-    console.error('Orders Fetch Error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+  let orders = data || [];
 
-  const orders = data || [];
+  if (error) {
+    // Si falló por order_items que aún no tiene relación, hacer fallback
+    console.warn('Orders Fetch fallback without order_items:', error.message);
+    const { data: fallbackData } = await supabase
+      .from('orders')
+      .select(`
+        *,
+        participants ( id, first_name, last_name, dni, whatsapp, department ),
+        campaigns ( id, name, slug ),
+        products ( id, name, price, product_type, tickets_count ),
+        payments ( id, receipt_path, status, amount, created_at )
+      `)
+      .order('created_at', { ascending: false });
+    orders = fallbackData || [];
+  }
 
   for (const order of orders) {
     if (order.payments) {

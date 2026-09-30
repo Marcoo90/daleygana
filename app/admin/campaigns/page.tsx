@@ -66,13 +66,20 @@ export default function CampaignsPage() {
     setSaving(false);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("¿Deseas eliminar esta campaña? Se borrarán sorteos y productos asociados.")) return;
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`⚠️ ¿Deseas eliminar la campaña "${name}"?\n\nEsta acción realizará una limpieza total: eliminará los sorteos, premios, órdenes, pagos, tickets y participantes asociados a esta campaña para dejar la plataforma limpia.`)) return;
     try {
        const res = await fetch(`/api/admin/campaigns?id=${id}`, { method: 'DELETE' });
-       if (res.ok) fetchCampaigns();
-       else alert("No se pudo eliminar");
-    } catch (err) { alert("Error de conexión"); }
+       const data = await res.json();
+       if (res.ok) {
+         alert("✅ Campaña y todos sus registros asociados eliminados con éxito.");
+         fetchCampaigns();
+       } else {
+         alert("❌ No se pudo eliminar: " + (data.error || 'Error desconocido'));
+       }
+    } catch (err: any) { 
+      alert("Error de conexión: " + err.message); 
+    }
   };
 
   return (
@@ -126,7 +133,7 @@ export default function CampaignsPage() {
                              <Link href={`/admin/raffles?campaignId=${c.id}`} className="btn-action-minimal" style={{ border: '1px solid #f3e8ff', color: '#7e22ce' }}>
                                 🎁 Premios
                              </Link>
-                             <button onClick={() => handleDelete(c.id)} className="btn-action-minimal" style={{ borderColor: '#fee2e2', color: '#ef4444' }}>🗑️</button>
+                             <button onClick={() => handleDelete(c.id, c.name)} className="btn-action-minimal" style={{ borderColor: '#fee2e2', color: '#ef4444' }} title="Eliminar y limpiar campaña">🗑️</button>
                           </div>
                        </td>
                     </tr>

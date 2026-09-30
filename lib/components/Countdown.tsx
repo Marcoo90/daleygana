@@ -103,14 +103,16 @@ export default function Countdown({ targetDate }: CountdownProps) {
           margin: 4rem auto;
           text-align: center;
           padding: 2.5rem;
-          background: rgba(0, 229, 255, 0.03);
+          background: var(--bg-card);
           border-radius: 2.5rem;
-          border: 1px dashed rgba(0, 229, 255, 0.2);
+          border: 2px dashed var(--border-focus);
+          box-shadow: var(--card-shadow);
           position: relative;
           overflow: hidden;
+          transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .countdown-label {
-          color: var(--accent-cyan);
+          color: var(--accent-cyan-contrast);
           font-weight: 900;
           font-size: 1.1rem;
           letter-spacing: 3px;
@@ -127,26 +129,38 @@ export default function Countdown({ targetDate }: CountdownProps) {
           flex-direction: column;
           align-items: center;
           min-width: 90px;
+          background: var(--bg-card-secondary);
+          padding: 1rem 0.8rem;
+          border-radius: 1.2rem;
+          border: 1px solid var(--border-subtle);
+          transition: background 0.3s ease;
         }
         .count-value {
           font-family: 'Outfit', sans-serif;
           font-size: 3.5rem;
           font-weight: 950;
-          color: #fff;
+          color: var(--text-heading);
           line-height: 1;
+        }
+        :global([data-theme="dark"]) .count-value {
+          color: #ffffff;
           text-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+        }
+        :global([data-theme="light"]) .count-value {
+          color: #0F172A;
+          text-shadow: 0 2px 10px rgba(2, 132, 199, 0.2);
         }
         .count-label {
           font-size: 0.75rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-muted);
           margin-top: 0.5rem;
           letter-spacing: 1px;
         }
         @media (max-width: 600px) {
-          .countdown-grid { gap: 1rem; }
-          .count-value { font-size: 2.5rem; }
-          .countdown-item { min-width: 70px; }
+          .countdown-grid { gap: 0.6rem; }
+          .count-value { font-size: 2.2rem; }
+          .countdown-item { min-width: 65px; padding: 0.8rem 0.4rem; }
         }
       `}</style>
     </div>

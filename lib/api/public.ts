@@ -7,7 +7,7 @@
  */
 export async function getActiveCampaignData() {
   try {
-    const res = await fetch('/api/public/active-campaign');
+    const res = await fetch('/api/public/active-campaign', { cache: 'no-store' });
     if (res.status === 404) return null;
     if (!res.ok) throw new Error('Error al obtener campaña');
     return await res.json();
@@ -22,7 +22,7 @@ export async function getActiveCampaignData() {
  */
 export async function getWinnersList() {
   try {
-    const res = await fetch('/api/public/winners');
+    const res = await fetch('/api/public/winners', { cache: 'no-store' });
     if (!res.ok) throw new Error('Error al obtener ganadores');
     return await res.json();
   } catch (err) {

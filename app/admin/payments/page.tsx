@@ -222,17 +222,45 @@ export default function PaymentsPage() {
                       </p>
                     </div>
 
-                    <div style={{ marginTop: '1rem', background: '#f8fafc', padding: '0.75rem', borderRadius: '0.75rem', border: '1px solid #e2e8f0' }}>
-                      <p style={{ fontSize: '0.68rem', fontWeight: 800, color: '#94a3b8', marginBottom: '0.3rem' }}>PRODUCTO:</p>
-                      <p style={{ color: '#1e1b4b', fontWeight: 700, fontSize: '0.9rem' }}>
-                        {o.products?.name || '⚠️ Sin producto asignado'}
-                      </p>
-                      <p style={{ fontSize: '0.78rem', color: '#64748b' }}>{o.campaigns?.name}</p>
-                      {o.products?.tickets_count && (
-                        <p style={{ fontSize: '0.78rem', color: '#2563eb', fontWeight: 700, marginTop: '0.25rem' }}>
-                          🎫 {o.products.tickets_count} ticket(s) a generar
-                        </p>
+                    <div style={{ marginTop: '1rem', background: '#f8fafc', padding: '0.85rem', borderRadius: '0.75rem', border: '1px solid #e2e8f0' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                        <span style={{ fontSize: '0.68rem', fontWeight: 900, color: '#6366f1', textTransform: 'uppercase' }}>
+                          TIPO DE COMPRA:
+                        </span>
+                        <span style={{
+                          background: (o.order_type === 'chances' || (o.order_items && o.order_items.length > 0)) ? '#fdf4ff' : '#eff6ff',
+                          color: (o.order_type === 'chances' || (o.order_items && o.order_items.length > 0)) ? '#a855f7' : '#2563eb',
+                          fontSize: '0.72rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '0.4rem'
+                        }}>
+                          {(o.order_type === 'chances' || (o.order_items && o.order_items.length > 0)) ? '⚡ Aumento de Chances' : '🎟️ Registro Base'}
+                        </span>
+                      </div>
+
+                      {/* Si es Aumento de chances con items */}
+                      {o.order_items && o.order_items.length > 0 ? (
+                        <div style={{ marginTop: '0.5rem' }}>
+                          <p style={{ fontSize: '0.75rem', fontWeight: 800, color: '#334155', marginBottom: '0.3rem' }}>Tickets por Premio:</p>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                            {o.order_items.map((it: any, idx: number) => (
+                              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', background: '#fff', padding: '0.3rem 0.5rem', borderRadius: '0.4rem', border: '1px solid #f1f5f9' }}>
+                                <span style={{ fontWeight: 700, color: '#1e1b4b' }}>{it.raffles?.prize_name || 'Premio'}:</span>
+                                <span style={{ fontWeight: 800, color: '#7e22ce' }}>+{it.quantity} tickets (S/ {it.subtotal})</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <p style={{ color: '#1e1b4b', fontWeight: 700, fontSize: '0.9rem' }}>
+                            {o.products?.name || 'Registro Base (S/ 10)'}
+                          </p>
+                          <p style={{ fontSize: '0.78rem', color: '#16a34a', fontWeight: 700, marginTop: '0.2rem' }}>
+                            ✨ 1 participación en TODOS los premios activos
+                          </p>
+                        </div>
                       )}
+                      
+                      <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.4rem' }}>Campaña: {o.campaigns?.name}</p>
                     </div>
                   </div>
 

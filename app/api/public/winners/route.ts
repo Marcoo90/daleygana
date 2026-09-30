@@ -21,11 +21,15 @@ export async function GET() {
     if (error) {
         console.error('Winners API Fetch Error:', error);
         // Fallback: Si fallan los joins, al menos traer la data plana
-        const { data: flatData } = await supabase.from('winners').select('*').order('published_at', { ascending: false });
-        return NextResponse.json(flatData);
+        const { data: flatData, error: flatError } = await supabase.from('winners').select('*').order('published_at', { ascending: false });
+        if (flatError) {
+             console.error('Winners API Fallback Error:', flatError);
+             return NextResponse.json([], { status: 200 }); // Retornar array vacio para no romper el frontend
+        }
+        return NextResponse.json(flatData || []);
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json(data || []);
   } catch (e: any) {
     console.error('Winners API Crash:', e);
     return NextResponse.json({ error: e.message }, { status: 500 });

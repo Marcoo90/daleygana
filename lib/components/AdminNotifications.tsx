@@ -11,56 +11,95 @@ interface Notification {
   timestamp: Date;
 }
 
-// Genera un sonido de notificación "ding" usando Web Audio API
-function playNotificationSound() {
+// Contexto de audio global (se desbloquea con la primera interacción del usuario)
+let audioCtxGlobal: AudioContext | null = null;
+
+function getAudioCtx(): AudioContext | null {
   try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-
-    const oscillator = ctx.createOscillator();
-    const gainNode = ctx.createGain();
-    const oscillator2 = ctx.createOscillator();
-    const gainNode2 = ctx.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(ctx.destination);
-    oscillator2.connect(gainNode2);
-    gainNode2.connect(ctx.destination);
-
-    // Primer tono - nota alta
-    oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(880, ctx.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(1046, ctx.currentTime + 0.1);
-    gainNode.gain.setValueAtTime(0, ctx.currentTime);
-    gainNode.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.01);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-    oscillator.start(ctx.currentTime);
-    oscillator.stop(ctx.currentTime + 0.4);
-
-    // Segundo tono - delay
-    oscillator2.type = "sine";
-    oscillator2.frequency.setValueAtTime(1046, ctx.currentTime + 0.15);
-    oscillator2.frequency.exponentialRampToValueAtTime(1318, ctx.currentTime + 0.3);
-    gainNode2.gain.setValueAtTime(0, ctx.currentTime + 0.15);
-    gainNode2.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 0.18);
-    gainNode2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.65);
-    oscillator2.start(ctx.currentTime + 0.15);
-    oscillator2.stop(ctx.currentTime + 0.65);
-  } catch (e) {
-    console.warn("Audio no disponible:", e);
+    if (!audioCtxGlobal || audioCtxGlobal.state === 'closed') {
+      audioCtxGlobal = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    if (audioCtxGlobal.state === 'suspended') {
+      audioCtxGlobal.resume();
+    }
+    return audioCtxGlobal;
+  } catch {
+    return null;
   }
 }
+
+// Desbloquea el AudioContext en la primera interacción del usuario
+function unlockAudio() {
+  const ctx = getAudioCtx();
+  if (ctx && ctx.state === 'suspended') {
+    ctx.resume();
+  }
+}
+
+// Sonido tipo "ding-dong-ding" — 3 notas ascendentes
+function playNotificationSound() {
+  try {
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+
+    // Notas musicales (Hz): Do5, Mi5, Sol5
+    const notes = [523.25, 659.25, 783.99];
+    const delays = [0, 0.18, 0.36];
+    const durations = [0.35, 0.35, 0.55];
+
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const t = ctx.currentTime + delays[i];
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+
+      // Ataque rápido → sustain → decay suave
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.45, t + 0.015);
+      gain.gain.setValueAtTime(0.4, t + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + durations[i]);
+
+      osc.start(t);
+      osc.stop(t + durations[i]);
+    });
+  } catch (e) {
+    console.warn('Audio no disponible:', e);
+  }
+}
+
 
 export default function AdminNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Desbloquear AudioContext en la primera interacción del usuario (política autoplay de navegadores)
+  useEffect(() => {
+    const onFirstInteraction = () => {
+      unlockAudio();
+      window.removeEventListener('click', onFirstInteraction);
+      window.removeEventListener('keydown', onFirstInteraction);
+    };
+    window.addEventListener('click', onFirstInteraction);
+    window.addEventListener('keydown', onFirstInteraction);
+    return () => {
+      window.removeEventListener('click', onFirstInteraction);
+      window.removeEventListener('keydown', onFirstInteraction);
+    };
+  }, []);
 
   const addNotification = useCallback((notif: Notification) => {
     setNotifications((prev) => [notif, ...prev].slice(0, 20)); // máx 20
     setUnreadCount((c) => c + 1);
-    playNotificationSound();
-  }, []);
+    if (audioEnabled) playNotificationSound();
+  }, [audioEnabled]);
 
   useEffect(() => {
     // Escuchar inserciones en la tabla `orders` (se crea cuando el usuario se registra)
@@ -175,6 +214,17 @@ export default function AdminNotifications() {
         zIndex: 9999,
       }}>
         {/* Botón campana */}
+        {/* Anillo pulsante cuando hay notificaciones sin leer */}
+        {unreadCount > 0 && (
+          <span style={{
+            position: "absolute",
+            inset: "-8px",
+            borderRadius: "50%",
+            border: "2px solid #10b981",
+            animation: "pulseRing 1.5s ease-out infinite",
+            pointerEvents: "none",
+          }} />
+        )}
         <button
           onClick={handleOpenPanel}
           title="Notificaciones de registro"
@@ -192,7 +242,7 @@ export default function AdminNotifications() {
             justifyContent: "center",
             fontSize: "1.4rem",
             boxShadow: unreadCount > 0
-              ? "0 0 0 4px rgba(16,185,129,0.25), 0 8px 24px rgba(0,0,0,0.2)"
+              ? "0 0 0 4px rgba(16,185,129,0.3), 0 8px 24px rgba(0,0,0,0.25)"
               : "0 8px 24px rgba(0,0,0,0.15)",
             transition: "all 0.25s",
             position: "relative",
@@ -252,23 +302,41 @@ export default function AdminNotifications() {
               <div style={{ fontWeight: 800, fontSize: "0.95rem" }}>
                 🔔 Nuevos Registros
               </div>
-              {notifications.length > 0 && (
+              <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+                {/* Toggle sonido */}
                 <button
-                  onClick={clearAll}
+                  onClick={() => setAudioEnabled(v => !v)}
+                  title={audioEnabled ? "Silenciar notificaciones" : "Activar sonido"}
                   style={{
-                    background: "rgba(255,255,255,0.15)",
-                    border: "none",
+                    background: audioEnabled ? "rgba(16,185,129,0.25)" : "rgba(255,255,255,0.1)",
+                    border: audioEnabled ? "1px solid rgba(16,185,129,0.5)" : "1px solid rgba(255,255,255,0.15)",
                     color: "#fff",
                     borderRadius: "0.4rem",
-                    padding: "0.25rem 0.6rem",
+                    padding: "0.25rem 0.5rem",
                     cursor: "pointer",
-                    fontSize: "0.75rem",
-                    fontWeight: 700,
+                    fontSize: "0.8rem",
                   }}
                 >
-                  Limpiar
+                  {audioEnabled ? "🔊" : "🔇"}
                 </button>
-              )}
+                {notifications.length > 0 && (
+                  <button
+                    onClick={clearAll}
+                    style={{
+                      background: "rgba(255,255,255,0.15)",
+                      border: "none",
+                      color: "#fff",
+                      borderRadius: "0.4rem",
+                      padding: "0.25rem 0.6rem",
+                      cursor: "pointer",
+                      fontSize: "0.75rem",
+                      fontWeight: 700,
+                    }}
+                  >
+                    Limpiar
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Lista */}
@@ -369,6 +437,11 @@ export default function AdminNotifications() {
           40%        { transform: rotate(15deg); }
           60%        { transform: rotate(-10deg); }
           80%        { transform: rotate(10deg); }
+        }
+        @keyframes pulseRing {
+          0%   { transform: scale(1);    opacity: 0.8; }
+          70%  { transform: scale(1.6);  opacity: 0; }
+          100% { transform: scale(1.6);  opacity: 0; }
         }
         @keyframes panelSlideUp {
           from { opacity: 0; transform: translateY(12px) scale(0.97); }
