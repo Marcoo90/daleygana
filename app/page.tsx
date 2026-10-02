@@ -364,12 +364,12 @@ export default function Home() {
         </div>
 
         {/* SECCIÓN GANADORES */}
-        <section style={{ padding: '6rem 0', position: 'relative', overflow: 'hidden', background: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', margin: '0 1.5rem 4rem', border: '1px solid var(--border-subtle)', boxShadow: 'var(--card-shadow)' }}>
+        <section className="winners-section-home">
           <div style={{ position: 'absolute', top: '50%', left: '20%', width: '300px', height: '300px', background: 'var(--accent-purple)', filter: 'blur(150px)', opacity: 0.08, borderRadius: '50%', zIndex: 0 }}></div>
           <div style={{ position: 'absolute', top: '20%', right: '10%', width: '400px', height: '400px', background: 'var(--accent-cyan-contrast)', filter: 'blur(180px)', opacity: 0.08, borderRadius: '50%', zIndex: 0 }}></div>
 
           <div className="container" style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
-            <h2 className="hero-mega-title" style={{ fontSize: '3rem', marginBottom: '4.5rem' }}>
+            <h2 className="hero-mega-title" style={{ fontSize: 'clamp(1.8rem, 5vw, 3rem)', marginBottom: '3rem' }}>
               GALERÍA DE NUESTROS GANADORES 📸
             </h2>
 
@@ -379,9 +379,11 @@ export default function Home() {
                   [...winners, ...winners].map((w, idx) => (
                     <div key={idx} className="winner-photo-wrapper">
                       <img
-                        src={w.winner_image_url || 'https://plchldr.co/i/400x300?&bg=111&fc=fff&text=Ganador'}
-                        alt="Ganador"
+                        src={w.winner_image_url || 'https://plchldr.co/i/400x300&bg=111&fc=fff&text=Ganador'}
+                        alt={`Ganador: ${w.visible_name || ''}`}
                         className="winner-photo-img"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
                   ))

@@ -387,7 +387,7 @@ function RegistroContent() {
             <div className="yape-box" style={{ border: '2px solid #742384' }}>
               <p style={{ color: 'var(--text-heading)', fontWeight: 950, marginBottom: '0.5rem' }}>PAGA CON YAPE</p>
               <img src="/images/yape.jpeg" alt="QR" style={{ width: '160px', borderRadius: '1rem', display: 'block', margin: '0 auto' }} />
-              <p style={{ marginTop: '1rem', fontWeight: 800, color: 'var(--text-heading)' }}>A NOMBRE DE: ALEX ALVARO GONZALES</p>
+              <p style={{ marginTop: '1rem', fontWeight: 800, color: 'var(--text-heading)' }}>A NOMBRE DE: Premios Mollo</p>
               <h4 style={{ fontSize: '2rem', marginTop: '0.5rem', color: 'var(--accent-yellow-contrast)' }}>959721395</h4>
             </div>
           </div>

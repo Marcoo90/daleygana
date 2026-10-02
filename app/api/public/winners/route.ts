@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin as supabase } from '@/lib/supabase/client';
 
-export const dynamic = 'force-dynamic';
+// Revalidate cache every 60 seconds - winners don't change often
+export const revalidate = 60;
 
 export async function GET() {
   try {
@@ -26,10 +27,14 @@ export async function GET() {
              console.error('Winners API Fallback Error:', flatError);
              return NextResponse.json([], { status: 200 }); // Retornar array vacio para no romper el frontend
         }
-        return NextResponse.json(flatData || []);
+        return NextResponse.json(flatData || [], {
+          headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' }
+        });
     }
 
-    return NextResponse.json(data || []);
+    return NextResponse.json(data || [], {
+      headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' }
+    });
   } catch (e: any) {
     console.error('Winners API Crash:', e);
     return NextResponse.json({ error: e.message }, { status: 500 });

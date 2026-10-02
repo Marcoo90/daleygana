@@ -206,7 +206,7 @@ export default function ConsultaPage() {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem' }}>
+              <div className="consulta-prizes-grid">
                 {data.participations_by_prize?.map((p: any) => (
                   <div key={p.raffle_id} style={{
                     background: 'var(--bg-card)',
@@ -228,6 +228,8 @@ export default function ConsultaPage() {
                           src={getImageUrl(p.prize_image)}
                           alt={p.prize_name}
                           className="prize-img-clean"
+                          loading="lazy"
+                          decoding="async"
                         />
                       </div>
 
@@ -522,6 +524,17 @@ export default function ConsultaPage() {
       </div>
 
       <style jsx>{`
+        .consulta-prizes-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+          gap: 1.5rem;
+        }
+        @media (max-width: 640px) {
+          .consulta-prizes-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+          }
+        }
         .modal-backdrop-pro {
           position: fixed;
           inset: 0;
@@ -531,18 +544,24 @@ export default function ConsultaPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 1rem;
+          padding: 0.75rem;
         }
         .modal-box-pro {
           background: var(--bg-modal);
           border: 1px solid var(--border-focus);
           border-radius: 1.8rem;
-          padding: 2rem;
+          padding: 1.8rem;
           width: 100%;
           max-width: 480px;
           max-height: 92vh;
           overflow-y: auto;
           box-shadow: var(--card-shadow);
+        }
+        @media (max-width: 480px) {
+          .modal-box-pro {
+            padding: 1.25rem 1rem;
+            border-radius: 1.25rem;
+          }
         }
         .btn-close-modal {
           background: var(--nav-link-bg);

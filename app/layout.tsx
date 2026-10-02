@@ -1,26 +1,49 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inter, Outfit } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400","500","600","700","800","900"],
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["700","800","900"],
 });
 
 export const metadata: Metadata = {
-  title: "EL RINCON DEL MOLLO",
-  description: "EL RINCON DEL MOLLO",
+  title: "EL RINCON DEL MOLLO | Sorteos Oficiales",
+  description: "Participa en los sorteos oficiales de El Rincón del Mollo. Pase general S/ 10, premios increíbles. ¡Tu suerte empieza aquí!",
+  keywords: "sorteos, premios, rifa, chance, ganar, perú, el rincon del mollo",
+  openGraph: {
+    title: "EL RINCON DEL MOLLO | Sorteos Oficiales",
+    description: "Participa en los sorteos oficiales. Pase general S/ 10, premios increíbles.",
+    type: "website",
+  },
+  robots: "index, follow",
 };
 
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  maximumScale: 5,
 };
 
 import Navbar from "@/lib/components/Navbar";
@@ -31,8 +54,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`} data-theme="dark">
+    <html lang="es" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${outfit.variable}`} data-theme="dark">
       <head>
+        <meta charSet="utf-8" />
+        <link rel="preconnect" href="https://xstgyummodmjegruvofg.supabase.co" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function() {

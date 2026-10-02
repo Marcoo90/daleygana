@@ -114,7 +114,9 @@ function WinnersAdminContent() {
           visible_name: winnerName.trim(),
           visible_ticket_code: winnerTicketCode.trim() || `CH-${winnerDni || 'GANADOR'}`,
           testimonial: testimonial.trim(),
-          winner_image_url: imageUrl || null
+          winner_image_url: imageUrl || null,
+          dni: winnerDni.trim() || undefined,
+          whatsapp: winnerWhatsapp.trim() || undefined
         })
       });
 
@@ -165,7 +167,7 @@ function WinnersAdminContent() {
         </div>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '2rem', alignItems: 'flex-start' }}>
+      <div className="admin-winners-grid">
         
         {/* FORMULARIO DE PUBLICACIÓN DE GANADOR */}
         <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '1.5rem', padding: '2rem', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
@@ -350,6 +352,19 @@ function WinnersAdminContent() {
         </div>
 
       </div>
+      <style jsx>{`
+        .admin-winners-grid {
+          display: grid;
+          grid-template-columns: 1.2fr 1fr;
+          gap: 2rem;
+          align-items: flex-start;
+        }
+        @media (max-width: 960px) {
+          .admin-winners-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
     </div>
   );
 }

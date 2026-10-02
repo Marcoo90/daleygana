@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900;950&display=swap');
-
 /* ============================================================
    DALE Y GANA - Comprehensive Design System & Theme Engine
    ============================================================ */
@@ -161,11 +159,14 @@ html {
 
 body {
   overflow-x: hidden;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter), var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   color: var(--text-main);
   min-height: 100vh;
   background-color: var(--bg-page);
   transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -177,6 +178,12 @@ img {
   display: block;
   max-width: 100%;
   height: auto;
+  content-visibility: auto;
+}
+
+/* Prevent layout shifts */
+img[loading='lazy'] {
+  background: var(--bg-card-secondary);
 }
 
 /* ── LAYOUT ── */
@@ -458,7 +465,7 @@ img {
 
 .v3-prize-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 1.5rem;
 }
 
@@ -619,6 +626,68 @@ img {
   letter-spacing: 1px;
 }
 
+/* ── HOME WINNERS SECTION & CAROUSEL ── */
+.winners-section-home {
+  padding: 5rem 0;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  margin: 0 auto 4rem;
+  max-width: 1200px;
+  width: 100%;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--card-shadow);
+}
+
+.ticker-container-v3 {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: 1rem 0;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+@keyframes tickerScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.winners-carousel-v2 {
+  display: flex;
+  gap: 1.5rem;
+  width: max-content;
+  animation: tickerScroll 25s linear infinite;
+}
+
+.winners-carousel-v2:hover {
+  animation-play-state: paused;
+}
+
+.winner-photo-wrapper {
+  flex-shrink: 0;
+  width: 260px;
+  height: 220px;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  background: var(--prize-box-bg);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.winner-photo-wrapper:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent-yellow);
+}
+
+.winner-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* ── PREMIOS PAGE ── */
 .premios-hero {
   position: relative;
@@ -650,8 +719,8 @@ img {
 
 .secondary-prize-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 1.5rem;
   margin-bottom: 4rem;
 }
 
@@ -783,7 +852,7 @@ img {
 /* Pack cards (shared) */
 .grid-3 {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   gap: 1.5rem;
 }
 
@@ -1258,43 +1327,36 @@ img {
 
 /* Tablet / medium */
 @media (max-width: 900px) {
-  .v3-prize-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .secondary-prize-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .grid-3 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .unified-card {
-    padding: 3rem 2.5rem;
+    padding: 3rem 2rem;
   }
 
   .amount-v5 {
     font-size: clamp(4rem, 14vw, 6.5rem);
   }
+
+  .upsell-section {
+    padding: 3rem 2rem;
+  }
 }
 
-/* Mobile */
+/* Mobile < 768px */
 @media (max-width: 768px) {
   .topbar {
     flex-direction: column;
     align-items: center;
-    padding: 1.5rem 0;
+    padding: 1rem 0;
+    gap: 0.75rem;
   }
 
   .nav-links {
     justify-content: center;
-    gap: 0.6rem;
+    gap: 0.5rem;
   }
 
   .nav-link {
-    font-size: 0.8rem;
-    padding: 0.55rem 1rem;
+    font-size: 0.78rem;
+    padding: 0.5rem 0.85rem;
   }
 
   .premios-hero {
@@ -1304,40 +1366,60 @@ img {
   .premios-hero-content {
     padding: 2rem;
   }
-}
 
-@media (max-width: 600px) {
-  .container {
+  .hero-mega-title {
+    font-size: clamp(1.9rem, 9vw, 3.2rem);
+    letter-spacing: -1.5px;
+    line-height: 1;
+  }
+
+  /* Winners carousel horizontal scroll on mobile */
+  .ticker-container-v3 {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .ticker-container-v3::-webkit-scrollbar {
+    display: none;
+  }
+  .winners-carousel-v2 {
+    animation: none !important;
+    display: flex;
+    gap: 1rem;
+    width: max-content;
     padding: 0 1rem;
   }
-
-  /* Registro */
-  .grid-2 {
-    grid-template-columns: 1fr;
+  .winner-photo-wrapper {
+    min-width: 220px;
+    max-width: 220px;
   }
+}
 
-  .grid-responsive {
-    grid-template-columns: 1fr;
-  }
-
-  .card {
-    padding: 1.75rem 1.25rem;
-  }
-
-  .btn-primary {
-    font-size: 1.2rem;
+/* Mobile < 640px */
+@media (max-width: 640px) {
+  .container {
+    padding: 0 0.875rem;
   }
 
   /* Typography */
   .hero-mega-title {
-    font-size: clamp(2rem, 11vw, 3rem);
+    font-size: clamp(1.8rem, 10vw, 2.8rem);
     letter-spacing: -1px;
+    line-height: 1.05;
+  }
+
+  .section-subtitle-white {
+    font-size: 1.2rem;
   }
 
   /* Home card */
   .unified-card {
-    padding: 2rem 1.25rem;
+    padding: 1.75rem 1rem;
     border-radius: 1.5rem;
+  }
+
+  .card-header-v5 {
+    margin-bottom: 2rem;
   }
 
   .amount-v5 {
@@ -1351,33 +1433,44 @@ img {
   }
 
   .pill-event-top {
-    font-size: 0.75rem;
-    padding: 0.4rem 1rem;
+    font-size: 0.72rem;
+    padding: 0.35rem 0.85rem;
     flex-wrap: wrap;
     justify-content: center;
+    gap: 0.4rem;
   }
 
   .card-hero-description {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
   }
 
   .btn-cyan-v5 {
-    font-size: 1.35rem;
-    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    padding: 1rem 1.25rem;
     border-radius: 1rem;
   }
 
-  /* Prize grid single column */
-  .v3-prize-grid {
+  .prizes-section-v5 {
+    margin-bottom: 2rem;
+  }
+
+  /* Registro */
+  .grid-2 {
     grid-template-columns: 1fr;
   }
 
-  .secondary-prize-grid {
+  .grid-responsive {
     grid-template-columns: 1fr;
   }
 
-  .grid-3 {
-    grid-template-columns: 1fr;
+  .card {
+    padding: 1.5rem 1rem;
+  }
+
+  .btn-primary {
+    font-size: 1.1rem;
+    padding: 0.9rem;
   }
 
   /* Premios page */
@@ -1387,17 +1480,17 @@ img {
   }
 
   .premios-hero-content {
-    padding: 1.5rem;
+    padding: 1.5rem 1rem;
   }
 
   .upsell-section {
-    padding: 2rem 1.25rem;
-    border-radius: 1.5rem;
+    padding: 1.75rem 1rem;
+    border-radius: 1.25rem;
   }
 
   .fallback-container {
-    padding: 2rem 1.25rem;
-    border-radius: 1.5rem;
+    padding: 2rem 1rem;
+    border-radius: 1.25rem;
   }
 
   .fallback-text {
@@ -1408,12 +1501,12 @@ img {
     display: block;
     width: 100%;
     text-align: center;
-    font-size: 1.2rem;
-    padding: 0.9rem 1.5rem;
+    font-size: 1.1rem;
+    padding: 0.9rem 1rem;
   }
 
   .prize-card-header {
-    height: 180px;
+    height: 170px;
   }
 
   .prize-card-qty {
@@ -1421,11 +1514,11 @@ img {
   }
 
   .prize-card-body-pro {
-    padding: 1.25rem;
+    padding: 1rem;
   }
 
   .prize-name-pro {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
 
   /* Alert + Campaign section alignment */
@@ -1435,36 +1528,90 @@ img {
   }
 
   .alert-fraud {
-    padding: 2rem 1.25rem;
-    border-radius: 1.5rem;
+    padding: 1.5rem 1rem;
+    border-radius: 1.25rem;
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
   }
 
-  .alert-fraud-company {
+  .alert-fraud-title {
     font-size: 1.2rem;
-    padding: 0.5rem 1.5rem;
+  }
+
+  .alert-fraud-company {
+    font-size: 1.1rem;
+    padding: 0.4rem 1rem;
   }
 
   /* Consulta */
   .consulta-card {
-    padding: 2.5rem 1.25rem;
-    margin: 2rem auto;
-    border-radius: 1.5rem;
+    padding: 2rem 1rem;
+    margin: 1.5rem auto;
+    border-radius: 1.25rem;
+  }
+
+  .hero-compact-title {
+    font-size: clamp(1.5rem, 8vw, 2rem);
+  }
+
+  .hero-compact-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
   }
 
   .search-group {
     flex-direction: column;
+    gap: 0.5rem;
   }
 
   .consulta-input {
     width: 100%;
+    height: 52px;
+    font-size: 1.3rem;
   }
 
   .consulta-btn-blue {
     width: 100%;
     justify-content: center;
-    height: 54px;
+    height: 52px;
+    font-size: 0.95rem;
+  }
+
+  /* Ganadores page grid */
+  .winner-card-premium {
+    border-radius: 1.25rem !important;
+  }
+
+  .winner-name {
+    font-size: 1.4rem !important;
+  }
+
+  .winner-prize {
+    font-size: 1rem !important;
+  }
+
+  /* Winners section margin fix */
+  section {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 400px) {
+  .nav-link {
+    font-size: 0.72rem;
+    padding: 0.45rem 0.7rem;
+  }
+
+  .btn-cyan-v5 {
+    font-size: 0.95rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .consulta-input {
+    font-size: 1.1rem;
+    padding: 0 1rem;
   }
 }
